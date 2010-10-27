@@ -5,6 +5,18 @@ import java.io.*;
 import java.net.*;
 
 public class Server {
+    private static final int DEFAULT_PORT = 7777;
+    
+    private int port;
+    
+    
+    public Server(){
+        this(DEFAULT_PORT);
+    }
+    
+    public Server(int port){
+        this.port = port;
+    }
     
     // static class ServerThread extends Thread {
     //     private Socket client = null;
@@ -67,6 +79,10 @@ public class Server {
                 new MainFrame().setVisible(true);
             }
         });
+    }
+    
+    public void stop(){
+        
     }
     
 }

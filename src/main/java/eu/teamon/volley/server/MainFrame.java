@@ -15,7 +15,7 @@ public class MainFrame extends JFrame {
     private JLabel portLabel;
     private JTextField portTextField;
     
-    private boolean started = false;
+    private Server server;
 
     public MainFrame() {
         setTitle("Volley Server");
@@ -53,23 +53,38 @@ public class MainFrame extends JFrame {
     }
     
     public void startStopServer(){
-        if(started){
-            stopServer();
-            startStopButton.setText("Start");
-        } else {
+        if(server == null){
             startServer();
-            startStopButton.setText("Stop");
+        } else {
+            stopServer();
         }
     }
     
     protected void stopServer(){
-        started = false;
-        Logger.debug("Server stopped");
+        if(server != null){
+            server.stop();
+            server = null;
+            Logger.debug("Server stopped");
+            startStopButton.setText("Start");
+            portTextField.setEnabled(true);
+        }
     }
     
     protected void startServer(){
-        started = true;
-        Logger.debug("Server started");
+        try {
+            int port = Integer.parseInt(portTextField.getText());
+            server = new Server(port);
+            Logger.debug("Server started");
+            startStopButton.setText("Stop");
+            portTextField.setEnabled(false);
+        } catch (Exception e){
+            Logger.error(e.getMessage());
+            showError("Wrong port number");
+        }
+    }
+    
+    protected void showError(String message){
+        JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
 }
