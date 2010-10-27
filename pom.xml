@@ -6,4 +6,26 @@
   <name>Volleyball online</name>
   <version>0.1.0</version>
   <packaging>jar</packaging>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.2</version>
+        <configuration>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <mainClass>eu.teamon.volley.server.Server</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+        
+      </plugin>
+    </plugins>
+  </build>
 </project>
