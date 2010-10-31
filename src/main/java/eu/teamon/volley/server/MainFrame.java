@@ -14,20 +14,31 @@ public class MainFrame extends JFrame {
     private JButton startStopButton;
     private JLabel portLabel;
     private JTextField portTextField;
+    private JTextArea logTextArea;
     
     private Server server;
 
     public MainFrame() {
         setTitle("Volley Server");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        
+        Container pane = getContentPane();
+        pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
+        
+        
+        JPanel settingsPane = new JPanel();
+        settingsPane.setLayout(new FlowLayout());
                 
         portLabel = new JLabel();
         portLabel.setText("Port:");
+        portLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        settingsPane.add(portLabel);
         
         portTextField = new JTextField();
         portTextField.setText("7777");
+        portTextField.setAlignmentX(Component.CENTER_ALIGNMENT);
+        settingsPane.add(portTextField);
 
-        
         startStopButton = new JButton();
         startStopButton.setText("Start");
         startStopButton.addActionListener(new ActionListener() {
@@ -35,19 +46,16 @@ public class MainFrame extends JFrame {
                 startStopServer();
             }
         });
+        startStopButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        settingsPane.add(startStopButton);
         
+        pane.add(settingsPane);
         
-        FlowLayout layout = new FlowLayout();
-        JPanel panel = new JPanel();
-        panel.setLayout(layout);
-        layout.setAlignment(FlowLayout.TRAILING);
-        
-        panel.add(portLabel);
-        panel.add(portTextField);
-        panel.add(startStopButton);
-        panel.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
-
-        getContentPane().add(panel, BorderLayout.CENTER);
+        logTextArea = new JTextArea(20, 40);
+        logTextArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(logTextArea);
+        logTextArea.setAlignmentX(Component.CENTER_ALIGNMENT);
+        pane.add(scrollPane);
 
         pack();
     }
@@ -64,7 +72,7 @@ public class MainFrame extends JFrame {
         if(server != null){
             server.stop();
             server = null;
-            Logger.debug("Server stopped");
+            log("Server stopped");
             startStopButton.setText("Start");
             portTextField.setEnabled(true);
         }
@@ -74,7 +82,7 @@ public class MainFrame extends JFrame {
         try {
             int port = Integer.parseInt(portTextField.getText());
             server = new Server(port);
-            Logger.debug("Server started");
+            log("Server started");
             startStopButton.setText("Stop");
             portTextField.setEnabled(false);
         } catch (Exception e){
@@ -85,6 +93,10 @@ public class MainFrame extends JFrame {
     
     protected void showError(String message){
         JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    
+    protected void log(String message){
+        logTextArea.append(message + "\n");
     }
 
 }
