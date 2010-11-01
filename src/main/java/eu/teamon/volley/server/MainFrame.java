@@ -35,7 +35,7 @@ public class MainFrame extends JFrame {
         settingsPane.add(portLabel);
         
         portTextField = new JTextField();
-        portTextField.setText("7777");
+        portTextField.setText(Integer.toString(Server.DEFAULT_PORT));
         portTextField.setAlignmentX(Component.CENTER_ALIGNMENT);
         settingsPane.add(portTextField);
 
@@ -43,7 +43,11 @@ public class MainFrame extends JFrame {
         startStopButton.setText("Start");
         startStopButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                startStopServer();
+                if(server == null){
+                    startServer();
+                } else {
+                    stopServer();
+                }
             }
         });
         startStopButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -59,24 +63,7 @@ public class MainFrame extends JFrame {
 
         pack();
     }
-    
-    public void startStopServer(){
-        if(server == null){
-            startServer();
-        } else {
-            stopServer();
-        }
-    }
-    
-    protected void stopServer(){
-        if(server != null){
-            server.stop();
-            server = null;
-            log("Server stopped");
-            startStopButton.setText("Start");
-            portTextField.setEnabled(true);
-        }
-    }
+
     
     protected void startServer(){
         try {
@@ -87,10 +74,20 @@ public class MainFrame extends JFrame {
             portTextField.setEnabled(false);
         } catch (Exception e){
             Logger.error(e.getMessage());
-            showError("Wrong port number");
+            showError(e.getMessage());
         }
     }
     
+    protected void stopServer(){
+        if(server != null){
+            server.kill();
+            server = null;
+            log("Server stopped");
+            startStopButton.setText("Start");
+            portTextField.setEnabled(true);
+        }
+    }
+
     protected void showError(String message){
         JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
