@@ -34,17 +34,13 @@ public class Server extends Thread {
             }
         }
         
-        public void kill(){
+        public void kill() throws IOException {
             Logger.debug("Kill ConnectionThread");
             keep = false;
             
-            try {
-                out.close();
-                in.close();
-                client.close();   
-            } catch (IOException e) {
-                Logger.error(e.getMessage());
-            }
+            out.close();
+            in.close();
+            client.close();
         }
     }
     
@@ -91,12 +87,11 @@ public class Server extends Thread {
             }
         }
         
-        // close all connections
-        for(ConnectionThread ct : this.connections){
-            ct.kill();
-        }
-        
         try {
+            // close all connections
+            for(ConnectionThread ct : this.connections){
+                ct.kill();
+            }
             socket.close();
         } catch (IOException e){
             Logger.error(e.getMessage());
