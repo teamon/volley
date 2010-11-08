@@ -1,7 +1,5 @@
-package eu.teamon.volley.chat;
+package eu.teamon.volley;
 
-
-import eu.teamon.volley.*;
 import java.util.Date;
 
 public class Message {

@@ -1,4 +1,4 @@
-package eu.teamon.volley.utils;
+package eu.teamon.volley;
 
 /**
  * Utils class for easier logging

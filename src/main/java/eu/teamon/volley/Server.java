@@ -1,59 +1,11 @@
-package eu.teamon.volley.server;
+package eu.teamon.volley;
 
-import eu.teamon.volley.utils.Logger;
 import java.util.*;
 import java.io.*;
 import java.net.*;
 
 
-public class Server extends Thread {
-    class ConnectionThread extends Thread {
-        private Socket client = null;
-        private PrintWriter out = null;
-        private BufferedReader in = null;
-        private boolean keep = true;
-        
-        
-        public ConnectionThread(Socket client){
-            super("ConnectionThread");
-            this.client = client;
-        }
-
-        public void run() {
-            try {
-                out = new PrintWriter(client.getOutputStream(), true);
-                in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-            
-                String inputLine;
-                while(keep && (inputLine = in.readLine()) != null){
-                    out.println("You sent me: " + inputLine);
-                    processMessage(this, inputLine);
-                }
-                
-            } catch (IOException e) {
-                Logger.error(e.getMessage());
-            }
-        }
-        
-        public void sendMessage(String message){
-            if(out != null) {
-                Logger.debug("RLY sending " + message);
-                out.println(message); 
-                Logger.debug("RLY sent");                
-            }
-        }
-        
-        public void kill() throws IOException {
-            Logger.debug("Kill ConnectionThread");
-            keep = false;
-            
-            out.close();
-            in.close();
-            client.close();
-        }
-    }
-    
-    
+public class Server extends Thread implements MessageListener {
     public static final int DEFAULT_PORT = 7777;
     
     private int port;
@@ -84,7 +36,7 @@ public class Server extends Thread {
         
         while(keep){
             try {
-                ConnectionThread ct = new ConnectionThread(socket.accept());
+                ConnectionThread ct = new ConnectionThread(this, socket.accept());
                 this.connections.add(ct);
                 Logger.debug("Client connected. Clients num: " + this.connections.size());
                 ct.start();
@@ -137,7 +89,7 @@ public class Server extends Thread {
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new MainFrame().setVisible(true);
+                new ServerFrame().setVisible(true);
             }
         });
     }

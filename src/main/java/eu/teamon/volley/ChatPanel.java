@@ -1,18 +1,16 @@
-package eu.teamon.volley.chat;
+package eu.teamon.volley;
 
-import eu.teamon.volley.utils.Logger;
-import eu.teamon.volley.client.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
 public class ChatPanel extends JPanel {
     private JTextField messageInput;
-    private MainFrame parent;
+    private Chat chat;
     
-    public ChatPanel(MainFrame parent){
+    public ChatPanel(Chat chat){
         super();
-        this.parent = parent;
+        this.chat = chat;
 
         setLayout(new FlowLayout());
 
@@ -21,16 +19,12 @@ public class ChatPanel extends JPanel {
         messageInput.setPreferredSize(new Dimension(250, 30));
         messageInput.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                sendMessage(messageInput.getText());
+                ChatPanel.this.chat.newMessage(messageInput.getText());
                 messageInput.setText("");
             }
         });
 
         add(messageInput);
     }
-    
-    public void sendMessage(String message){
-        Client client = parent.getClient();
-        if(client != null) client.sendChatMessage(message);
-    }
+
 }
