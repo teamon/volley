@@ -22,6 +22,24 @@ public class Client implements MessageListener {
     
     public void processMessage(ConnectionThread from, String message){
         Logger.debug("Client#processMessage(" + message + ")");
+        
+        String[] chunks = message.split(" ", 2);
+        switch(chunks[0].charAt(0)){
+            case 'c':
+                if(chunks.length == 2){
+                    String[] nickAndContent = chunks[1].split(" ", 2);
+                    if(nickAndContent.length == 2){
+                        Logger.debug("Add chat message");
+                        chat.addMessage(new Message(new Player(nickAndContent[0]), nickAndContent[1]));
+                    }   
+                }
+                break;
+                
+            default:  
+                Logger.error("Unknown command: " + message);
+                break;
+        }
+        
         // 
         // String[] chunks = message.split(" ", 2);
         // switch(Integer.parseInt(chunks[0])){
