@@ -21,16 +21,25 @@ public class Server extends Thread {
 
         public void run() {
             try {
-                out = new PrintWriter(client.getOutputStream());
+                out = new PrintWriter(client.getOutputStream(), true);
                 in = new BufferedReader(new InputStreamReader(client.getInputStream()));
             
                 String inputLine;
                 while(keep && (inputLine = in.readLine()) != null){
-                    out.println("message form server");
+                    out.println("You sent me: " + inputLine);
+                    processMessage(this, inputLine);
                 }
                 
             } catch (IOException e) {
                 Logger.error(e.getMessage());
+            }
+        }
+        
+        public void sendMessage(String message){
+            if(out != null) {
+                Logger.debug("RLY sending " + message);
+                out.println(message); 
+                Logger.debug("RLY sent");                
             }
         }
         
@@ -103,6 +112,27 @@ public class Server extends Thread {
         keep = false;
     }
     
+    public void processMessage(ConnectionThread from, String message){
+        Logger.debug("Server#processMessage(" + message + ")");
+        String[] chunks = message.split(" ", 2);
+    
+        switch(chunks[0].charAt(0)){
+            case 'c':
+                sendToAll(message);
+                // if(chunks.length == 3) chat.addMessage(new Message(new Player(chunks[1]), chunks[2]))
+                break;
+            default:
+                Logger.error("Unknown command: " + message);
+                break;
+        }
+    }
+    
+    public void sendToAll(String message){
+        for(ConnectionThread ct : this.connections){
+            Logger.debug("Sending: " + message);
+            ct.sendMessage(message);
+        }
+    }
     
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {

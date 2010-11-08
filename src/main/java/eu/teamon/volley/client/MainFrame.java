@@ -1,5 +1,6 @@
 package eu.teamon.volley.client;
 
+import eu.teamon.volley.chat.*;
 import eu.teamon.volley.utils.Logger;
 import javax.swing.*;
 import java.awt.event.*;
@@ -16,6 +17,7 @@ public class MainFrame extends JFrame {
     private JTextField portTextField;
     private JLabel hostLabel;
     private JTextField hostTextField;
+    private ChatPanel chatPanel;
 
     private Client client;
 
@@ -65,9 +67,18 @@ public class MainFrame extends JFrame {
         
         pane.add(settingsPane);
         
+        // Chat
+        chatPanel = new ChatPanel(this);
+        pane.add(chatPanel);
+        
         pack();
     }
     
+    
+    public Client getClient(){
+        return this.client;
+    }
+
     protected void connect(){
         try {
             int port = Integer.parseInt(portTextField.getText());
@@ -82,7 +93,7 @@ public class MainFrame extends JFrame {
             showError("Wrong port number");
         }
     }
-    
+
     protected void showError(String message){
         JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
