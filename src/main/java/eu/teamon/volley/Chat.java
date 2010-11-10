@@ -23,7 +23,7 @@ public class Chat {
     }
         
     protected String formatMessage(String message){
-        return "c " + message;
+        return "c " + client.getPlayer().getNick() + " " + message;
     }
     
 }

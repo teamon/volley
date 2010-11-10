@@ -8,6 +8,7 @@ public class Player {
     }
     
     public String getNick(){
+        Logger.debug("getNick " + this.nick);
         return this.nick;
     }
 }

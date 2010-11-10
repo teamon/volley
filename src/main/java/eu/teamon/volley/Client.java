@@ -8,9 +8,9 @@ public class Client implements MessageListener {
     private Player player;
     private ConnectionThread connection;
     
-    public Client(String host, int port) throws IOException {
+    public Client(String host, int port, Player player) throws IOException {
         this.chat = new Chat(this);
-        this.player = new Player("Dupa");
+        this.player = player;
         this.connection = new ConnectionThread(this, new Socket(host, port));
         this.connection.start();
     }
@@ -54,6 +54,18 @@ public class Client implements MessageListener {
     
     public Chat getChat(){
         return this.chat;
+    }
+    
+    public Player getPlayer(){
+        return this.player;
+    }
+    
+    public void kill(){
+        try {                
+            this.connection.kill();
+        } catch (IOException e){
+            Logger.warn("Temporary silent fail");
+        }
     }
 
     public static void main(String args[]) {
