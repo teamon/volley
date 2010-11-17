@@ -2,17 +2,22 @@ package eu.teamon.volley;
 
 import java.io.*;
 import java.net.*;
+import java.util.*;
 
 public class Client implements MessageListener {
     private Chat chat;
     private Player player;
+	private Map<String, Player> players;
     private ConnectionThread connection;
     
     public Client(String host, int port, Player player) throws IOException {
         this.chat = new Chat(this);
         this.player = player;
+		this.players = new HashMap<String, Player>();
+		this.players.put(player.getNick(), player);
         this.connection = new ConnectionThread(this, new Socket(host, port));
         this.connection.start();
+		sendMessage(Command.newPlayerRegistered(player));
     }
     
     public void sendMessage(String message){
@@ -50,6 +55,10 @@ public class Client implements MessageListener {
         //         Logger.error("Unknown command: " + message);
         //         break;
         // }
+    }
+    
+    public void remove(ConnectionThread connection){
+        Logger.error("Implement me!");
     }
     
     public Chat getChat(){

@@ -11,6 +11,7 @@ public class Server extends Thread implements MessageListener {
     private int port;
     private ServerSocket socket = null;
     private List<ConnectionThread> connections;
+	private Map<String, Player> players;
     private boolean keep = true;
     
     public Server() throws IOException {
@@ -23,7 +24,7 @@ public class Server extends Thread implements MessageListener {
         this.socket = new ServerSocket(port);
         
         this.connections = new ArrayList<ConnectionThread>();
-        
+		this.players = new HashMap<String, Player>();        
         start();
     }
     
@@ -39,7 +40,7 @@ public class Server extends Thread implements MessageListener {
                 ConnectionThread ct = new ConnectionThread(this, socket.accept());
                 this.connections.add(ct);
                 Logger.debug("Client connected. Clients num: " + this.connections.size());
-                ct.start();
+                ct.start();				
             } catch (SocketTimeoutException e){
                 // do nothing
                 Logger.debug("Socket Timeout");
@@ -69,14 +70,23 @@ public class Server extends Thread implements MessageListener {
         String[] chunks = message.split(" ", 2);
     
         switch(chunks[0].charAt(0)){
-            case 'c':
+            case 'c': // chat "c [NICK] [CONTENT]"
                 sendToAll(message);
                 // if(chunks.length == 3) chat.addMessage(new Message(new Player(chunks[1]), chunks[2]))
                 break;
+
+			case 'r': // register new user "r [NICK]"
+				sendToAll(message);
+				break;
+
             default:
                 Logger.error("Unknown command: " + message);
                 break;
         }
+    }
+    
+    public void remove(ConnectionThread connection){
+        this.connections.remove(connection);
     }
     
     public void sendToAll(String message){

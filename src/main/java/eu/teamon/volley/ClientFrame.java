@@ -115,7 +115,7 @@ public class ClientFrame extends JFrame {
         
         } catch (IOException e){
             Logger.error(e.getMessage());
-            showError("Wrong port number");
+            showError("Something bad " + e.getMessage());
         }
     }
     

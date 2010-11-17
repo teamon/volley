@@ -19,11 +19,7 @@ public class Chat {
     }
     
     public void newMessage(String message){
-        this.client.sendMessage(formatMessage(message));
-    }
-        
-    protected String formatMessage(String message){
-        return "c " + client.getPlayer().getNick() + " " + message;
+        this.client.sendMessage(Command.chatMessage(new Message(client.getPlayer(), message)));
     }
     
 }

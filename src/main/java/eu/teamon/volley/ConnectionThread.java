@@ -48,5 +48,7 @@ public class ConnectionThread extends Thread {
         out.close();
         in.close();
         socket.close();
+        
+        this.listener.remove(this);
     }
 }
