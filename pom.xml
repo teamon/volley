@@ -29,7 +29,7 @@
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
-              <mainClass>eu.teamon.volley.server.Server</mainClass>
+              <mainClass>eu.teamon.volley.Client</mainClass>
             </manifest>
           </archive>
         </configuration>
