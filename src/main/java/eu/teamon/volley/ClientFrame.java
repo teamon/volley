@@ -1,6 +1,7 @@
 package eu.teamon.volley;
 
 import javax.swing.*;
+import javax.swing.border.*;
 import java.awt.event.*;
 import java.awt.*;
 import java.io.IOException;
@@ -23,72 +24,69 @@ public class ClientFrame extends JFrame {
     private Client client;
 
     public ClientFrame() {
-        setTitle("Volley Client");
+       setTitle("Volley Client");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        
-        Container pane = getContentPane();
-        pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
-        
-        
-        JPanel settingsPane = new JPanel();
-        settingsPane.setLayout(new FlowLayout());
-                
-        // port
-        portLabel = new JLabel();
-        portLabel.setText("Port:");
-        portLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        settingsPane.add(portLabel);
-        
-        portTextField = new JTextField();
-        portTextField.setPreferredSize(new Dimension(50, 30));
-        portTextField.setText("7777");
-        portTextField.setAlignmentX(Component.CENTER_ALIGNMENT);
-        settingsPane.add(portTextField);
-        
-        // host
-        hostLabel = new JLabel();
-        hostLabel.setText("Host:");
-        hostLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        settingsPane.add(hostLabel);
-        
-        hostTextField = new JTextField();
-        hostTextField.setPreferredSize(new Dimension(250, 30));
-        hostTextField.setText("");
-        hostTextField.setAlignmentX(Component.CENTER_ALIGNMENT);
-        settingsPane.add(hostTextField);
-        
-        // nick
-        nickLabel = new JLabel();
-        nickLabel.setText("Nick:");
-        nickLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        settingsPane.add(nickLabel);
-        
-        nickTextField = new JTextField();
-        nickTextField.setPreferredSize(new Dimension(250, 30));
-        // nickTextField.setText("");
-        nickTextField.setAlignmentX(Component.CENTER_ALIGNMENT);
-        settingsPane.add(nickTextField);
-        
+		setBounds(100, 100, 722, 474);
 
-        connectButton = new JButton();
-        connectButton.setText("Connect");
+		JPanel pane = new JPanel();
+		pane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        pane.setLayout(null);
+		setContentPane(pane);
+
+        JPanel settingsPanel = new JPanel();
+		settingsPanel.setBorder(new TitledBorder(null, "Settings", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		settingsPanel.setBounds(406, 6, 310, 139);
+        settingsPanel.setLayout(null);
+		pane.add(settingsPanel);
+
+        // port
+        portLabel = new JLabel("Port:");
+		portLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+		portLabel.setBounds(17, 50, 61, 16);
+        settingsPanel.add(portLabel);
+
+        portTextField = new JTextField();
+		portTextField.setBounds(90, 44, 213, 28);
+        portTextField.setText("7777");
+        settingsPanel.add(portTextField);
+
+        // host
+        hostLabel = new JLabel("Host:");
+		hostLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+		hostLabel.setBounds(17, 22, 61, 16);
+        settingsPanel.add(hostLabel);
+
+        hostTextField = new JTextField();
+		hostTextField.setBounds(90, 16, 213, 28);
+        settingsPanel.add(hostTextField);
+
+        // nick
+        nickLabel = new JLabel("Nick:");
+		nickLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+		nickLabel.setBounds(17, 78, 61, 16);
+        settingsPanel.add(nickLabel);
+
+        nickTextField = new JTextField();
+		nickTextField.setBounds(90, 72, 213, 28);
+        settingsPanel.add(nickTextField);
+
+
+        connectButton = new JButton("Connect");
         connectButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if(client == null){
-                    connect();
-                } else {
-                    disconnect();
-                }
+
             }
         });
-        connectButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        settingsPane.add(connectButton);
+		connectButton.setBounds(100, 104, 117, 29);
+        settingsPanel.add(connectButton);
+
         
-        pane.add(settingsPane);
+        pane.add(settingsPanel); // TODO: Extract settingsPanel into separate class
+		pane.add(new GamePanel());
         
         // Chat
         
-        pack();
+        // pack();
     }
     
     
