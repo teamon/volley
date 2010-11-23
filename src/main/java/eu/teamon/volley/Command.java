@@ -8,4 +8,12 @@ public class Command {
 	public static String chatMessage(Message message){
 		return "c " + message.getAuthor().getNick() + " " + message.getContent();
 	}
+	
+	public static String chatMessage(Player player, String message){
+		return "c " + player.getNick() + " " + message;
+	}
+	
+	public static String chatMessage(String message){
+		return "c " + message;
+	}
 }

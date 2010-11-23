@@ -28,6 +28,7 @@ public class ConnectionThread extends Thread {
         
             String inputLine;
             while(keep && (inputLine = in.readLine()) != null){
+            	Logger.debug("ConnectionThread: " + inputLine);
                 listener.processMessage(this, inputLine);
             }
             
@@ -37,9 +38,8 @@ public class ConnectionThread extends Thread {
     }
     
     public void sendMessage(String message){
-        if(out != null){
-            out.println(message);
-        }
+        while(out == null);
+        out.println(message);
     }
     
     public void kill() throws IOException {

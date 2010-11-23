@@ -8,10 +8,9 @@ import java.net.*;
 public class Server extends Thread implements MessageListener {
     public static final int DEFAULT_PORT = 7777;
     
-    private int port;
+    //private int port;
     private ServerSocket socket = null;
-    private List<ConnectionThread> connections;
-	private Map<String, Player> players;
+    private Map<ConnectionThread, Player> connections;
     private boolean keep = true;
     
     public Server() throws IOException {
@@ -20,11 +19,10 @@ public class Server extends Thread implements MessageListener {
     
     public Server(int port) throws IOException {
         super("Server");
-        this.port = port;
+        //this.port = port;
         this.socket = new ServerSocket(port);
         
-        this.connections = new ArrayList<ConnectionThread>();
-		this.players = new HashMap<String, Player>();        
+		this.connections = new HashMap<ConnectionThread, Player>();        
         start();
     }
     
@@ -38,7 +36,7 @@ public class Server extends Thread implements MessageListener {
         while(keep){
             try {
                 ConnectionThread ct = new ConnectionThread(this, socket.accept());
-                this.connections.add(ct);
+                this.connections.put(ct, new Player());
                 Logger.debug("Client connected. Clients num: " + this.connections.size());
                 ct.start();				
             } catch (SocketTimeoutException e){
@@ -51,9 +49,10 @@ public class Server extends Thread implements MessageListener {
         
         try {
             // close all connections
-            for(ConnectionThread ct : this.connections){
-                ct.kill();
+            for (Map.Entry<ConnectionThread, Player> entry : connections.entrySet()) {
+                entry.getKey().kill();
             }
+            
             socket.close();
         } catch (IOException e){
             Logger.error(e.getMessage());
@@ -70,13 +69,20 @@ public class Server extends Thread implements MessageListener {
         String[] chunks = message.split(" ", 2);
     
         switch(chunks[0].charAt(0)){
-            case 'c': // chat "c [NICK] [CONTENT]"
-                sendToAll(message);
-                // if(chunks.length == 3) chat.addMessage(new Message(new Player(chunks[1]), chunks[2]))
+            case 'c': // chat "c [CONTENT]"
+            	if(chunks.length == 2){
+            		String x = Command.chatMessage(this.connections.get(from), chunks[1]);
+            		Logger.debug("x=" + x);
+            		sendToAll(x);
+            	}
                 break;
 
 			case 'r': // register new user "r [NICK]"
-				sendToAll(message);
+				Logger.debug("USer registered: " + chunks[1]);
+				if(chunks.length == 2){
+					this.connections.get(from).setNick(chunks[1]);
+					sendToAll(message);	
+				}
 				break;
 
             default:
@@ -90,9 +96,9 @@ public class Server extends Thread implements MessageListener {
     }
     
     public void sendToAll(String message){
-        for(ConnectionThread ct : this.connections){
+    	for (Map.Entry<ConnectionThread, Player> entry : connections.entrySet()) {
             Logger.debug("Sending: " + message);
-            ct.sendMessage(message);
+            entry.getKey().sendMessage(message);
         }
     }
     

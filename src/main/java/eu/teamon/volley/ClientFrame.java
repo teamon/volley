@@ -3,15 +3,17 @@ package eu.teamon.volley;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.event.*;
-import java.awt.*;
 import java.io.IOException;
 
+import javax.swing.text.*;
 
 /**
  *
  * @author teamon
  */
 public class ClientFrame extends JFrame {
+	private class EmptyNickException extends Exception {}
+	// Settings
     private JButton connectButton;
     private JLabel portLabel;
     private JTextField portTextField;
@@ -19,14 +21,18 @@ public class ClientFrame extends JFrame {
     private JTextField hostTextField;
     private JLabel nickLabel;
     private JTextField nickTextField;
-    private ChatPanel chatPanel;
+    
+    //Chat
+    private JTextField chatMessageInput;
+    private JTextArea chatTextArea;
 
     private Client client;
-
+    private JPanel gamePanel;
+    
     public ClientFrame() {
-       setTitle("Volley Client");
+        setTitle("Volley Client");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		setBounds(100, 100, 722, 474);
+		setBounds(100, 100, 764, 443);
 
 		JPanel pane = new JPanel();
 		pane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -35,7 +41,7 @@ public class ClientFrame extends JFrame {
 
         JPanel settingsPanel = new JPanel();
 		settingsPanel.setBorder(new TitledBorder(null, "Settings", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		settingsPanel.setBounds(406, 6, 310, 139);
+		settingsPanel.setBounds(448, 6, 310, 139);
         settingsPanel.setLayout(null);
 		pane.add(settingsPanel);
 
@@ -47,7 +53,7 @@ public class ClientFrame extends JFrame {
 
         portTextField = new JTextField();
 		portTextField.setBounds(90, 44, 213, 28);
-        portTextField.setText("7777");
+        portTextField.setText(Integer.toString(Server.DEFAULT_PORT));
         settingsPanel.add(portTextField);
 
         // host
@@ -74,7 +80,8 @@ public class ClientFrame extends JFrame {
         connectButton = new JButton("Connect");
         connectButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
+	            if(client.isConnected()) disconnect();
+	            else connect();
             }
         });
 		connectButton.setBounds(100, 104, 117, 29);
@@ -82,13 +89,53 @@ public class ClientFrame extends JFrame {
 
         
         pane.add(settingsPanel); // TODO: Extract settingsPanel into separate class
-		pane.add(new GamePanel());
+		//pane.add(new GamePanel());
         
         // Chat
+        JPanel chatPanel = new JPanel();
+        chatPanel.setBorder(new TitledBorder(null, "Chat", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+        chatPanel.setBounds(448, 158, 310, 258);
+        chatPanel.setLayout(null);
+
+        chatMessageInput = new JTextField();
+        chatMessageInput.setBounds(6, 225, 298, 28);
+        chatMessageInput.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String msg = chatMessageInput.getText();
+                if(!msg.equals("")) {
+                    client.getChat().newMessage(chatMessageInput.getText());
+                    chatMessageInput.setText("");
+                }
+            }
+        });
+
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setLocation(6, 19);
+        scrollPane.setSize(298, 203);
+
+
+        chatPanel.add(chatMessageInput);
+        chatPanel.add(scrollPane);
         
-        // pack();
+        chatTextArea = new JTextArea();
+        scrollPane.setViewportView(chatTextArea);
+        chatTextArea.setEditable(false);
+        chatTextArea.setLineWrap(true);
+        ((DefaultCaret)chatTextArea.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+		pane.add(chatPanel);
+		
+		gamePanel = new GamePanel();
+		gamePanel.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		gamePanel.setBounds(6, 6, 430, 410);
+		pane.add(gamePanel);
+		
+		client = new Client();
+		client.setChat(new Chat(client, this));
     }
     
+    public void addChatMessage(Message message){
+    	chatTextArea.append(String.format("<%s> %s\n", message.getAuthor().getNick(), message.getContent()));
+    }
     
     public Client getClient(){
         return this.client;
@@ -100,17 +147,24 @@ public class ClientFrame extends JFrame {
             int port = Integer.parseInt(portTextField.getText());
             String host = hostTextField.getText();
             String nick = nickTextField.getText();
-            client = new Client(host, port, new Player(nick));
+            if(nick.equals("")){
+            	throw new EmptyNickException();
+            }
+            client.connect(host, port, new Player(nick));
             Logger.debug("Client connected");
+            
+            // Disable settings
             portTextField.setEnabled(false);
             hostTextField.setEnabled(false);
             nickTextField.setEnabled(false);
             connectButton.setText("Disconnect");
+            
+            // Enable chat
+            chatTextArea.setEnabled(true);
+            chatMessageInput.setEnabled(true);
         
-            chatPanel = new ChatPanel(this.client.getChat());
-            getContentPane().add(chatPanel);
-            pack();
-        
+        } catch (EmptyNickException e){
+        	showError("Nick can't be empty");
         } catch (IOException e){
             Logger.error(e.getMessage());
             showError("Something bad " + e.getMessage());
@@ -118,23 +172,20 @@ public class ClientFrame extends JFrame {
     }
     
     protected void disconnect(){
-        client.kill();
-        client = null;
+        client.disconnect();
+        
+        // enable settings
         portTextField.setEnabled(true);
         hostTextField.setEnabled(true);
         nickTextField.setEnabled(true);
         connectButton.setText("Connect");
         
-        if(chatPanel != null){
-            getContentPane().remove(chatPanel);
-            chatPanel = null;
-            pack();
-        }
-
+        // disable chat
+        chatTextArea.setEnabled(false);
+        chatMessageInput.setEnabled(false);
     }
 
     protected void showError(String message){
         JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
-
 }

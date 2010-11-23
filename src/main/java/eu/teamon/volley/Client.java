@@ -10,8 +10,15 @@ public class Client implements MessageListener {
 	private Map<String, Player> players;
     private ConnectionThread connection;
     
-    public Client(String host, int port, Player player) throws IOException {
-        this.chat = new Chat(this);
+    public Client(){
+    	
+    }
+    
+    public void setChat(Chat chat){
+    	this.chat = chat;
+    }
+    
+    public void connect(String host, int port, Player player) throws IOException {
         this.player = player;
 		this.players = new HashMap<String, Player>();
 		this.players.put(player.getNick(), player);
@@ -69,12 +76,18 @@ public class Client implements MessageListener {
         return this.player;
     }
     
-    public void kill(){
+    public void disconnect(){
         try {                
-            this.connection.kill();
+            if(this.connection != null) this.connection.kill();
         } catch (IOException e){
             Logger.warn("Temporary silent fail");
+        } finally {
+        	this.connection = null;
         }
+    }
+    
+    public boolean isConnected(){
+    	return this.connection != null;
     }
 
     public static void main(String args[]) {

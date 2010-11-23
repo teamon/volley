@@ -1,13 +1,12 @@
 package eu.teamon.volley;
 
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.JPanel;
 
 public class GamePanel extends JPanel {
 	
     public GamePanel(){
-		setSize(300, 300);
+		setSize(430, 410);
 	}
     
   	public void paintComponent(Graphics g){
