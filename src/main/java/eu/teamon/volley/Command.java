@@ -16,4 +16,12 @@ public class Command {
 	public static String chatMessage(String message){
 		return "c " + message;
 	}
+	
+	public static String moveX(int x){
+		return "m " + x;
+	}
+	
+	public static String playerPosition(Player player){
+		return "s " + player.getNick() + " " + player.getX() + " " + player.getY();
+	}
 }

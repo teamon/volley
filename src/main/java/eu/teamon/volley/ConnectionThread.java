@@ -38,7 +38,9 @@ public class ConnectionThread extends Thread {
     }
     
     public void sendMessage(String message){
-        while(out == null);
+        while(out == null){
+        	Logger.error("out == null kurwa!");
+        }
         out.println(message);
     }
     

@@ -27,7 +27,7 @@ public class ClientFrame extends JFrame {
     private JTextArea chatTextArea;
 
     private Client client;
-    private JPanel gamePanel;
+    private ClientGame game;
     
     public ClientFrame() {
         setTitle("Volley Client");
@@ -124,13 +124,15 @@ public class ClientFrame extends JFrame {
         ((DefaultCaret)chatTextArea.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 		pane.add(chatPanel);
 		
-		gamePanel = new GamePanel();
-		gamePanel.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		gamePanel.setBounds(6, 6, 430, 410);
-		pane.add(gamePanel);
-		
 		client = new Client();
 		client.setChat(new Chat(client, this));
+		
+		game = new ClientGame(client);
+		game.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		game.setBounds(6, 6, 430, 410);
+		pane.add(game);
+		
+
     }
     
     public void addChatMessage(Message message){
@@ -163,6 +165,7 @@ public class ClientFrame extends JFrame {
             chatTextArea.setEnabled(true);
             chatMessageInput.setEnabled(true);
         
+    		game.start(); // TEMPORARY!!
         } catch (EmptyNickException e){
         	showError("Nick can't be empty");
         } catch (IOException e){

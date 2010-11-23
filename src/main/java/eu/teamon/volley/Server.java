@@ -71,20 +71,38 @@ public class Server extends Thread implements MessageListener {
         switch(chunks[0].charAt(0)){
             case 'c': // chat "c [CONTENT]"
             	if(chunks.length == 2){
-            		String x = Command.chatMessage(this.connections.get(from), chunks[1]);
-            		Logger.debug("x=" + x);
-            		sendToAll(x);
+            		sendToAll(Command.chatMessage(this.connections.get(from), chunks[1]));
             	}
                 break;
 
 			case 'r': // register new user "r [NICK]"
-				Logger.debug("USer registered: " + chunks[1]);
+				Logger.debug("User registered: " + chunks[1]);
 				if(chunks.length == 2){
 					this.connections.get(from).setNick(chunks[1]);
 					sendToAll(message);	
+					
+					// send list of all players to new player
+					for (Player player : connections.values()) {
+			            from.sendMessage(Command.newPlayerRegistered(player));
+			        }
+					
 				}
 				break;
-
+				
+			case 'm': // move player "m [1|-1]"
+				if(chunks.length == 2){
+					int dir = Integer.parseInt(chunks[1]);
+					Player player = this.connections.get(from);
+					if(dir > 0){
+						player.incrementX();
+					} else if(dir < 0){
+						player.decrementX();
+					}
+					sendToAll(Command.playerPosition(player));
+				}
+				
+				break;
+				
             default:
                 Logger.error("Unknown command: " + message);
                 break;

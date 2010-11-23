@@ -9,9 +9,10 @@ public class Client implements MessageListener {
     private Player player;
 	private Map<String, Player> players;
     private ConnectionThread connection;
+    private ClientGame game;
     
     public Client(){
-    	
+		this.players = new HashMap<String, Player>();
     }
     
     public void setChat(Chat chat){
@@ -20,7 +21,6 @@ public class Client implements MessageListener {
     
     public void connect(String host, int port, Player player) throws IOException {
         this.player = player;
-		this.players = new HashMap<String, Player>();
 		this.players.put(player.getNick(), player);
         this.connection = new ConnectionThread(this, new Socket(host, port));
         this.connection.start();
@@ -37,7 +37,7 @@ public class Client implements MessageListener {
         
         String[] chunks = message.split(" ", 2);
         switch(chunks[0].charAt(0)){
-            case 'c':
+            case 'c': // c [nick] [content]
                 if(chunks.length == 2){
                     String[] nickAndContent = chunks[1].split(" ", 2);
                     if(nickAndContent.length == 2){
@@ -46,6 +46,25 @@ public class Client implements MessageListener {
                     }   
                 }
                 break;
+                
+            case 's': // s [nick] [xpos] [ypos]
+            	if(chunks.length == 2){
+            		String[] nickAndPosition = chunks[1].split(" ", 3);
+            		Player player = this.players.get(nickAndPosition[0]);
+            		if(player != null){
+            			player.setX(Integer.parseInt(nickAndPosition[1]));
+            			player.setY(Integer.parseInt(nickAndPosition[2]));
+            		}
+            		
+            	}
+            	break;
+            	
+            case 'r': // r [nick]
+            	// register new game player
+            	if(chunks.length == 2){
+            		players.put(chunks[1], new Player(chunks[1]));
+            	}
+            	break;
                 
             default:  
                 Logger.error("Unknown command: " + message);
@@ -74,6 +93,10 @@ public class Client implements MessageListener {
     
     public Player getPlayer(){
         return this.player;
+    }
+    
+    public Collection<Player> getPlayers(){
+    	return players.values();
     }
     
     public void disconnect(){

@@ -7,4 +7,12 @@
     mvn assembly:assembly
     
 ## Run
-    java -jar target/volley-0.1.0-jar-with-dependencies.jar
+    bin/server
+	bin/client
+
+
+
+## TODO (dirty):
+* remove players when disconnected
+* send message to server when disconnecting
+
