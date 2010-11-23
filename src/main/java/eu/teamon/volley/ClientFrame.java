@@ -103,7 +103,7 @@ public class ClientFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String msg = chatMessageInput.getText();
                 if(!msg.equals("")) {
-                    client.getChat().newMessage(chatMessageInput.getText());
+                    client.sendMessage(Command.chatMessage(chatMessageInput.getText()));
                     chatMessageInput.setText("");
                 }
             }
@@ -124,8 +124,7 @@ public class ClientFrame extends JFrame {
         ((DefaultCaret)chatTextArea.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 		pane.add(chatPanel);
 		
-		client = new Client();
-		client.setChat(new Chat(client, this));
+		client = new Client(this);
 		
 		game = new ClientGame(client);
 		game.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -135,8 +134,8 @@ public class ClientFrame extends JFrame {
 
     }
     
-    public void addChatMessage(Message message){
-    	chatTextArea.append(String.format("<%s> %s\n", message.getAuthor().getNick(), message.getContent()));
+    public void addChatMessage(Player player, String message){
+    	chatTextArea.append(String.format("<%s> %s\n", player.getNick(), message));
     }
     
     public Client getClient(){

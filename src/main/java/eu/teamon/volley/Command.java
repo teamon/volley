@@ -5,10 +5,6 @@ public class Command {
 		return "r " + player.getNick();
 	}
 	
-	public static String chatMessage(Message message){
-		return "c " + message.getAuthor().getNick() + " " + message.getContent();
-	}
-	
 	public static String chatMessage(Player player, String message){
 		return "c " + player.getNick() + " " + message;
 	}

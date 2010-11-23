@@ -1,13 +1,14 @@
 package eu.teamon.volley;
 
 public class Player {
-    private final int X_SPEED = 4;
+    private final float X_SPEED = 0.005f;
+    private final float X_MAX = 1f;
 	
 	private String nick;
     
     // Game stuff
-    private int x;
-    private int y;
+    private float x;
+    private float y;
     
     
     
@@ -17,8 +18,8 @@ public class Player {
     
     public Player(String nick){
         this.nick = nick;
-        this.x = 0;
-        this.y = 0;
+        this.x = 0f;
+        this.y = 0f;
     }
     
     public void setNick(String nick){
@@ -29,30 +30,30 @@ public class Player {
         return this.nick;
     }
 
-	public int getX() {
+	public float getX() {
 		return x;
 	}
 
-	public void setX(int x) {
+	public void setX(float x) {
 		this.x = x;
 	}
 
-	public int getY() {
+	public float getY() {
 		return y;
 	}
 
-	public void setY(int y) {
+	public void setY(float y) {
 		this.y = y;
 	}
 	
 	public void incrementX(){
 		this.x += X_SPEED;
-		// TODO: Add range handling!!
+		if(this.x > X_MAX) this.x = X_MAX;
 	}
 	
 	public void decrementX(){
 		this.x -= X_SPEED;
-		// TODO: Add range handling
+		if(this.x < -X_MAX) this.x = -X_MAX;
 	}
     
     

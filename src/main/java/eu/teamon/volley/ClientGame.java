@@ -86,7 +86,7 @@ public class ClientGame extends JPanel {
     				try { Thread.sleep(10); } catch (InterruptedException e){ }
     			}
     		}
-    	};
+    	}; // TODO: Kill me!
     	
     	gameThread.start();
     	Logger.debug("Game started");
@@ -110,9 +110,11 @@ public class ClientGame extends JPanel {
   		
 		g.setColor(Color.RED);
 		
-		g.translate(0, HEIGHT-50);
 		for(Player player : client.getPlayers()){
-			g.fillRect(player.getX(), player.getY(), 50, 50);
+			int x = (int)((player.getX()+1f)/2 * WIDTH);
+			int y = (int)((1f - player.getY()) * HEIGHT);
+			Logger.debug("x=" + x + ", y=" + y);
+			g.fillRect(x-25, y-50, 50, 50);
 		}
 		
 	}

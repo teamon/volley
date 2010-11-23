@@ -5,18 +5,15 @@ import java.net.*;
 import java.util.*;
 
 public class Client implements MessageListener {
-    private Chat chat;
+    private ClientFrame frame;
     private Player player;
 	private Map<String, Player> players;
     private ConnectionThread connection;
     private ClientGame game;
     
-    public Client(){
+    public Client(ClientFrame frame){
+    	this.frame = frame;
 		this.players = new HashMap<String, Player>();
-    }
-    
-    public void setChat(Chat chat){
-    	this.chat = chat;
     }
     
     public void connect(String host, int port, Player player) throws IOException {
@@ -41,8 +38,10 @@ public class Client implements MessageListener {
                 if(chunks.length == 2){
                     String[] nickAndContent = chunks[1].split(" ", 2);
                     if(nickAndContent.length == 2){
-                        Logger.debug("Add chat message");
-                        chat.addMessage(new Message(new Player(nickAndContent[0]), nickAndContent[1]));
+                    	Player player = players.get(nickAndContent[0]);
+                    	if(player != null){
+                    		frame.addChatMessage(player, nickAndContent[1]);
+                    	}
                     }   
                 }
                 break;
@@ -52,8 +51,8 @@ public class Client implements MessageListener {
             		String[] nickAndPosition = chunks[1].split(" ", 3);
             		Player player = this.players.get(nickAndPosition[0]);
             		if(player != null){
-            			player.setX(Integer.parseInt(nickAndPosition[1]));
-            			player.setY(Integer.parseInt(nickAndPosition[2]));
+            			player.setX(Float.parseFloat(nickAndPosition[1]));
+            			player.setY(Float.parseFloat(nickAndPosition[2]));
             		}
             		
             	}
@@ -62,7 +61,9 @@ public class Client implements MessageListener {
             case 'r': // r [nick]
             	// register new game player
             	if(chunks.length == 2){
-            		players.put(chunks[1], new Player(chunks[1]));
+            		if(!players.containsKey(chunks[1])){
+            			players.put(chunks[1], new Player(chunks[1]));
+            		}
             	}
             	break;
                 
@@ -85,10 +86,6 @@ public class Client implements MessageListener {
     
     public void remove(ConnectionThread connection){
         Logger.error("Implement me!");
-    }
-    
-    public Chat getChat(){
-        return this.chat;
     }
     
     public Player getPlayer(){
