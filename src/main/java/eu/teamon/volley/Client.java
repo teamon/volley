@@ -70,17 +70,6 @@ public class Client implements MessageListener {
                 Logger.error("Unknown command: " + message);
                 break;
         }
-        
-        // 
-        // String[] chunks = message.split(" ", 2);
-        // switch(Integer.parseInt(chunks[0])){
-        //     case 'c':
-        //         if(chunks.length == 3) chat.addMessage(new Message(new Player(chunks[1]), chunks[2]));
-        //         break;
-        //     default:
-        //         Logger.error("Unknown command: " + message);
-        //         break;
-        // }
     }
     
     public void remove(ConnectionThread connection){

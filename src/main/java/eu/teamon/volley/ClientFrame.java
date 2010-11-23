@@ -175,6 +175,8 @@ public class ClientFrame extends JFrame {
     
     protected void disconnect(){
         client.disconnect();
+        Logger.error("DISCONNECT");
+        //game.stop();
         
         // enable settings
         portTextField.setEnabled(true);

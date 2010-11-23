@@ -2,16 +2,16 @@ package eu.teamon.volley;
 
 public class Game {
 	private Server server;
-	private Thread gameThread;
+	private SmartThread gameThread;
 	
 	public Game(Server server){
 		this.server = server;
 	}
 	
 	public void start(){
-		gameThread = new Thread(){
+		gameThread = new SmartThread(){
 			public void run(){
-				while(true) {
+				while(keep) {
 					process();
 					try { Thread.sleep(10); } catch (InterruptedException e){ }
 				}
@@ -20,6 +20,10 @@ public class Game {
 		
 		gameThread.start();
 		Logger.debug("Game Thread started");
+	}
+	
+	public void stop(){
+		gameThread.kill();
 	}
 	
 	public void process(){

@@ -11,9 +11,8 @@ public class ClientGame extends JPanel {
 	private final int HEIGHT = 410;
 	
 	private Client client;
-	//private boolean running = false;
 
-	private Thread gameThread;
+	private SmartThread gameThread;
 	
     public ClientGame(Client client){
     	this.client = client;
@@ -75,29 +74,35 @@ public class ClientGame extends JPanel {
     public void start(){
     	requestFocus();
     	
-    	gameThread = new Thread(){
+    	gameThread = new SmartThread(){
     		public void run(){
-    			while(true) {
+    			while(keep) {
     				repaint();
     			}
     		}
-    	}; // TODO: Kill me!
+    	};
     	
     	gameThread.start();
     	Logger.debug("Game started");
+    }
+    
+    public void stop(){
+    	gameThread.kill();    	
     }
 
   	public void paintComponent(Graphics g){
   		g.setColor(Color.WHITE);
   		g.clearRect(0, 0, WIDTH, HEIGHT);
   		
-		g.setColor(Color.RED);
-		
-		for(Player player : client.getPlayers()){
-			int x = (int)((player.getX()+1f)/2 * WIDTH);
-			int y = (int)((1f - player.getY()) * HEIGHT);
-			g.fillRect(x-25, y-50, 50, 50);
-		}
+  		if(gameThread != null && gameThread.isAlive()){
+			g.setColor(Color.RED);
+			
+			for(Player player : client.getPlayers()){
+				int x = (int)((player.getX()+1f)/2 * WIDTH);
+				int y = (int)((1f - player.getY()) * HEIGHT);
+				g.fillRect(x-25, y-50, 50, 50);
+			}
+  		}
 		
 	}
 }

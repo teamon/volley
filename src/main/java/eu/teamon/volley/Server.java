@@ -5,13 +5,12 @@ import java.io.*;
 import java.net.*;
 
 
-public class Server extends Thread implements MessageListener {
+public class Server extends SmartThread implements MessageListener {
     public static final int DEFAULT_PORT = 7777;
     
     //private int port;
     private ServerSocket socket = null;
     private Map<ConnectionThread, Player> connections;
-    private boolean keep = true;
     private Game game;
     
     public Server() throws IOException {
@@ -19,8 +18,6 @@ public class Server extends Thread implements MessageListener {
     }
     
     public Server(int port) throws IOException {
-        super("Server");
-        
         this.socket = new ServerSocket(port);
         this.connections = new HashMap<ConnectionThread, Player>();     
         this.game = new Game(this);
@@ -59,11 +56,6 @@ public class Server extends Thread implements MessageListener {
         } catch (IOException e){
             Logger.error(e.getMessage());
         }
-    }
-    
-    public void kill(){
-        Logger.debug("Kill Server");
-        keep = false;
     }
     
     public void processMessage(ConnectionThread from, String message){
