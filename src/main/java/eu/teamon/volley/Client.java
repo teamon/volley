@@ -9,7 +9,6 @@ public class Client implements MessageListener {
     private Player player;
 	private Map<String, Player> players;
     private ConnectionThread connection;
-    private ClientGame game;
     
     public Client(ClientFrame frame){
     	this.frame = frame;

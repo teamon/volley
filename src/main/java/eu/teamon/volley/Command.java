@@ -13,8 +13,12 @@ public class Command {
 		return "c " + message;
 	}
 	
-	public static String moveX(int x){
-		return "m " + x;
+	public static String movingLeft(boolean moving){
+		return "m l " + (moving ? 1 : 0);
+	}
+	
+	public static String movingRight(boolean moving){
+		return "m r " + (moving ? 1 : 0);
 	}
 	
 	public static String playerPosition(Player player){

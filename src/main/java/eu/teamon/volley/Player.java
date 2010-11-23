@@ -10,9 +10,10 @@ public class Player {
     private float x;
     private float y;
     
+	private boolean movingLeft = false;
+	private boolean movingRight = false;    
     
-    
-    public Player(){
+	public Player(){
     	this("");
     }
     
@@ -30,21 +31,11 @@ public class Player {
         return this.nick;
     }
 
-	public float getX() {
-		return x;
-	}
+	public float getX() { return x; }
+	public void setX(float x) {	this.x = x; }
 
-	public void setX(float x) {
-		this.x = x;
-	}
-
-	public float getY() {
-		return y;
-	}
-
-	public void setY(float y) {
-		this.y = y;
-	}
+	public float getY() { return y; }
+	public void setY(float y) { this.y = y; }
 	
 	public void incrementX(){
 		this.x += X_SPEED;
@@ -54,6 +45,19 @@ public class Player {
 	public void decrementX(){
 		this.x -= X_SPEED;
 		if(this.x < -X_MAX) this.x = -X_MAX;
+	}
+	
+	public void setMovingLeft(boolean movingLeft) {	this.movingLeft = movingLeft; }
+	public void setMovingRight(boolean movingRight) { this.movingRight = movingRight; }
+	
+	public boolean isMoving(){
+		return (movingLeft || movingRight);
+	}
+	
+	public void move(){
+		Logger.debug("Move player: " + movingLeft + " " + movingRight);
+		if(movingLeft) decrementX();
+		if(movingRight) incrementX();
 	}
     
     

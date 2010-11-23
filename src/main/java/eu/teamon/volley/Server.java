@@ -12,6 +12,7 @@ public class Server extends Thread implements MessageListener {
     private ServerSocket socket = null;
     private Map<ConnectionThread, Player> connections;
     private boolean keep = true;
+    private Game game;
     
     public Server() throws IOException {
         this(DEFAULT_PORT);
@@ -19,10 +20,11 @@ public class Server extends Thread implements MessageListener {
     
     public Server(int port) throws IOException {
         super("Server");
-        //this.port = port;
-        this.socket = new ServerSocket(port);
         
-		this.connections = new HashMap<ConnectionThread, Player>();        
+        this.socket = new ServerSocket(port);
+        this.connections = new HashMap<ConnectionThread, Player>();     
+        this.game = new Game(this);
+        this.game.start();
         start();
     }
     
@@ -89,16 +91,17 @@ public class Server extends Thread implements MessageListener {
 				}
 				break;
 				
-			case 'm': // move player "m [1|-1]"
+			case 'm': // player moving "m [l|r] [0|1]"
 				if(chunks.length == 2){
-					int dir = Integer.parseInt(chunks[1]);
+					String[] dirAndState = chunks[1].split(" ", 2);
 					Player player = this.connections.get(from);
-					if(dir > 0){
-						player.incrementX();
-					} else if(dir < 0){
-						player.decrementX();
+					//Logger.debug("dirAndState[0] = " + dirAndState[0]);
+					//Logger.debug("dirAndState[1] = " + dirAndState[1]);
+					if(dirAndState[0].equals("r")){
+						player.setMovingRight(dirAndState[1].equals("1"));
+					} else if(dirAndState[0].equals("l")){
+						player.setMovingLeft(dirAndState[1].equals("1"));
 					}
-					sendToAll(Command.playerPosition(player));
 				}
 				
 				break;
@@ -118,6 +121,10 @@ public class Server extends Thread implements MessageListener {
             Logger.debug("Sending: " + message);
             entry.getKey().sendMessage(message);
         }
+    }
+    
+    public Collection<Player> getPlayers(){
+    	return connections.values();
     }
     
     public static void main(String args[]) {
