@@ -7,6 +7,7 @@ import java.net.*;
 
 public class Server extends SmartThread implements MessageListener {
     public static final int DEFAULT_PORT = 7777;
+    public static final int CONNECTIONS_LIMIT = 2;
     
     //private int port;
     private ServerSocket socket = null;
@@ -34,10 +35,19 @@ public class Server extends SmartThread implements MessageListener {
         
         while(keep){
             try {
-                ConnectionThread ct = new ConnectionThread(this, socket.accept());
-                this.connections.put(ct, new Player());
-                Logger.debug("Client connected. Clients num: " + this.connections.size());
-                ct.start();				
+            	if(this.connections.size() < CONNECTIONS_LIMIT){
+                    ConnectionThread ct = new ConnectionThread(this, socket.accept());
+                    this.connections.put(ct, new Player());
+                    Logger.debug("Client connected. Clients num: " + this.connections.size());
+                    ct.start();		
+            	} else {
+            		try {
+            			Thread.sleep(500);
+            		} catch (InterruptedException e){
+            			// do nothing
+            		}
+            	}
+		
             } catch (SocketTimeoutException e){
                 // do nothing
                 Logger.debug("Socket Timeout");

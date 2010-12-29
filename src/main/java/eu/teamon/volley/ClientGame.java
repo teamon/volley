@@ -87,7 +87,7 @@ public class ClientGame extends JPanel {
     }
     
     public void stop(){
-    	gameThread.kill();    	
+    	if(gameThread != null) gameThread.kill();    	
     }
 
   	public void paintComponent(Graphics g){
