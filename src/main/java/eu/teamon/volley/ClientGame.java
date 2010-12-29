@@ -78,6 +78,7 @@ public class ClientGame extends JPanel {
     		public void run(){
     			while(keep) {
     				repaint();
+    				try { Thread.sleep(10); } catch (InterruptedException e){ }
     			}
     		}
     	};

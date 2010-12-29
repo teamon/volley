@@ -66,12 +66,14 @@ public class Client implements MessageListener {
     		case Command.START_GAME:
     		{
     			frame.getGame().start();
+    			frame.disableChat();
     		}
     		break;
     		
     		case Command.STOP_GAME:
     		{
     			frame.getGame().stop();
+    			frame.enableChat();
     		}
     		break;
     		

@@ -176,8 +176,7 @@ public class ClientFrame extends JFrame {
             connectButton.setText("Disconnect");
             
             // enable chat
-            chatTextArea.setEnabled(true);
-            chatMessageInput.setEnabled(true);
+            enableChat();
             
             // enable ready button
             readyButton.setEnabled(true);
@@ -202,11 +201,20 @@ public class ClientFrame extends JFrame {
         connectButton.setText("Connect");
         
         // disable chat
-        chatTextArea.setEnabled(false);
-        chatMessageInput.setEnabled(false);
+        disableChat();
         
         // disable ready button
         readyButton.setEnabled(false);
+    }
+    
+    public void disableChat(){
+    	chatTextArea.setEnabled(false);
+        chatMessageInput.setEnabled(false);
+    }
+    
+    public void enableChat(){
+    	chatTextArea.setEnabled(true);
+        chatMessageInput.setEnabled(true);
     }
 
     protected void showError(String message){

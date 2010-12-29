@@ -19,7 +19,7 @@ public class Game {
 		};
 		
 		gameThread.start();
-		Logger.debug("Game Thread started");
+		Logger.debug("Server Game Thread started");
 	}
 	
 	public void stop(){
@@ -28,8 +28,10 @@ public class Game {
 	
 	public void process(){
 		for(Player player : server.getPlayers()){
-			player.move();
-			server.sendToAll(Command.playerPosition(player));
+			if(player.isMoving()){
+				player.move();
+				server.sendToAll(Command.playerPosition(player));
+			}
 		}
 	}
 }

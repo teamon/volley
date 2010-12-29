@@ -93,13 +93,15 @@ public class Server extends SmartThread implements MessageListener {
     		
     		case Command.MOVING_LEFT:
     		{
-    			this.connections.get(from).setMovingLeft(cmd.args[0] == "1");
+    			this.connections.get(from).setMovingLeft(cmd.args[0].equals("1"));
+    			Logger.debug("Moving left " + cmd.args[0].equals("1"));
     		}
     		break;
     		
     		case Command.MOVING_RIGHT:
     		{
-    			this.connections.get(from).setMovingRight(cmd.args[0] == "1");
+    			this.connections.get(from).setMovingRight(cmd.args[0].equals("1"));
+    			Logger.debug("Moving right");
     		}
     		break;
     		
@@ -148,10 +150,14 @@ public class Server extends SmartThread implements MessageListener {
     }
     
     protected void tryStartGame(){
-    	if(allPlayersReady()){
+    	if(ready()){
     		game.start();
 			sendToAll(Command.startGame());	
     	}
+    }
+    
+    protected boolean ready(){
+    	return (this.connections.size() == CONNECTIONS_LIMIT && allPlayersReady());
     }
     
     protected boolean allPlayersReady(){

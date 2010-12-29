@@ -1,7 +1,7 @@
 package eu.teamon.volley;
 
 public class Player {
-    private final float X_SPEED = 0.005f;
+    private final float X_SPEED = 0.01f;
     private final float X_MAX = 1f;
 	
 	private String nick;
@@ -55,11 +55,12 @@ public class Player {
 	public void setMovingRight(boolean movingRight) { this.movingRight = movingRight; }
 	
 	public boolean isMoving(){
+//		Logger.debug("player#isMoving: " + movingLeft + " " + movingRight);
 		return (movingLeft || movingRight);
 	}
 	
 	public void move(){
-		Logger.debug("Move player: " + movingLeft + " " + movingRight);
+//		Logger.debug("Move player: " + movingLeft + " " + movingRight);
 		if(movingLeft) decrementX();
 		if(movingRight) incrementX();
 	}

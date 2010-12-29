@@ -28,7 +28,7 @@ public class ConnectionThread extends Thread {
         
             String inputLine;
             while(keep && (inputLine = in.readLine()) != null){
-            	Logger.debug("ConnectionThread: " + inputLine);
+//            	Logger.debug("ConnectionThread: " + inputLine);
                 listener.processMessage(this, inputLine);
             }
             
