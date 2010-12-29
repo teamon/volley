@@ -28,7 +28,12 @@ public class Client implements MessageListener {
     }
     
     public void processMessage(ConnectionThread from, String message){
+    	Logger.debug("client got: " + message);
+
     	Command cmd = Command.parse(message);
+    	
+    	Logger.debug("client got: " + cmd.toString());
+    	
     	switch(cmd.id){
     		case Command.SERVER_CHAT_MESSAGE:
     		{
@@ -64,6 +69,19 @@ public class Client implements MessageListener {
     		}
     		break;
     		
+    		case Command.STOP_GAME:
+    		{
+    			frame.getGame().stop();
+    		}
+    		break;
+    		
+    		case Command.PLAYER_DISCONNECTED:
+    		{
+    			frame.getGame().stop();
+    			this.players.remove(cmd.args[0]);
+    		}
+    		break;
+    		
     		default:  
     			Logger.error("Unknown command: " + message);
                 break;
@@ -84,7 +102,10 @@ public class Client implements MessageListener {
     
     public void disconnect(){
         try {                
-            if(this.connection != null) this.connection.kill();
+            if(isConnected()) {
+            	sendMessage(Command.disconnect());
+            	this.connection.kill();
+            }
         } catch (IOException e){
             Logger.warn("Temporary silent fail");
         } finally {

@@ -21,7 +21,7 @@ public class Server extends SmartThread implements MessageListener {
         this.socket = new ServerSocket(port);
         this.connections = new HashMap<ConnectionThread, Player>();     
         this.game = new Game(this);
-        this.game.start();
+        // this.game.start();
         start();
     }
     
@@ -48,8 +48,8 @@ public class Server extends SmartThread implements MessageListener {
         
         try {
             // close all connections
-            for (Map.Entry<ConnectionThread, Player> entry : connections.entrySet()) {
-                entry.getKey().kill();
+            for(ConnectionThread ct : connections.keySet()) {
+                ct.kill();
             }
             
             socket.close();
@@ -59,7 +59,9 @@ public class Server extends SmartThread implements MessageListener {
     }
     
     public void processMessage(ConnectionThread from, String message){
+    	Logger.debug("server got: " + message);
     	Command cmd = Command.parse(message);
+    	
     	switch(cmd.id){
     		case Command.CLIENT_CHAT_MESSAGE:
     		{
@@ -98,9 +100,24 @@ public class Server extends SmartThread implements MessageListener {
     		}
     		break;
     		
+    		case Command.DISCONNECT:
+    		{
+    			// TODO: game.stop();
+    			Player player = this.connections.get(from);
+    			sendToAll(Command.playerDisconnected(player));
+    			try { 
+    				from.kill(); 
+    			} catch (IOException e) { 
+    				Logger.error(e.getMessage()); 
+    			}
+    			this.connections.remove(from);
+                Logger.debug("Client disconnected. Clients left: " + this.connections.size());
+    		}
+    		break;
+    		
     		default:
     			Logger.error("Unknown command: " + message);
-    			break;
+    		break;
     			
     	}
     }

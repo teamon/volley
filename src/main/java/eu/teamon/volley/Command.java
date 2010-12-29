@@ -14,21 +14,32 @@ public class Command {
 	}
 	
 	public static Command parse(String message){
-		String[] chunks = message.split(SEPARATOR, 2);
-		return new Command(Integer.parseInt(chunks[0]), chunks[1].split(SEPARATOR));
+		try {
+			String[] chunks = message.split(SEPARATOR, 2);
+			if(chunks.length < 2) return new Command(Integer.parseInt(chunks[0]));
+			String[] args = chunks[1].split(SEPARATOR);
+			return new Command(Integer.parseInt(chunks[0]), args);
+		} catch (NumberFormatException e){
+			Logger.error("Bad message: " + message);
+		}
+		return new Command(INVALID);
 	}
 	
-	public static final String SEPARATOR = "$";
+	public static final String SEPARATOR = "#";
 	
 
+	public static final int INVALID				= -1;
 	public static final int PLAYER_REGISTERED 	= 1;
 	public static final int CLIENT_CHAT_MESSAGE = 2;
-	public static final int SERVER_CHAT_MESSAGE = 2;
-	public static final int MOVING_LEFT 		= 3;
-	public static final int MOVING_RIGHT 		= 4;
-	public static final int PLAYER_POSITION 	= 5;
-	public static final int PLAYER_READY 		= 6;
-	public static final int START_GAME			= 7;
+	public static final int SERVER_CHAT_MESSAGE = 3;
+	public static final int MOVING_LEFT 		= 4;
+	public static final int MOVING_RIGHT 		= 5;
+	public static final int PLAYER_POSITION 	= 6;
+	public static final int PLAYER_READY 		= 7;
+	public static final int START_GAME			= 8;
+	public static final int DISCONNECT			= 9;
+	public static final int PLAYER_DISCONNECTED	= 10;
+	public static final int STOP_GAME			= 11;
 	
 	public static Command newPlayerRegistered(Player player){
 		return new Command(PLAYER_REGISTERED, player.getNick());
@@ -40,12 +51,7 @@ public class Command {
 	
 	public static Command chatMessage(String message){
 		return new Command(CLIENT_CHAT_MESSAGE, message);
-	}
-	
-//	public static Command moving(Player player){
-//		return new Command(MOVING, player.is)
-//	}
-	
+	}	
 
 	public static Command movingLeft(boolean moving){
 		return new Command(MOVING_LEFT, moving ? "1" : "0");
@@ -65,5 +71,13 @@ public class Command {
 	
 	public static Command startGame(){
 		return new Command(START_GAME);
+	}
+	
+	public static Command disconnect(){
+		return new Command(DISCONNECT);
+	}
+	
+	public static Command playerDisconnected(Player player){
+		return new Command(PLAYER_DISCONNECTED, player.getNick());
 	}
 }

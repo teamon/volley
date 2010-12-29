@@ -12,7 +12,7 @@ public class Logger {
     public static final int ERROR = 3;
     
     
-    private static int level = WARN;
+    private static int level = DEBUG;
     
     public static void setLevel(int i){
         level = i;
