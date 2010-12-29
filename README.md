@@ -13,6 +13,6 @@
 
 
 ## TODO (dirty):
-* remove players when disconnected
-* send message to server when disconnecting
-
+* remove players when disconnected (send message to server when disconnecting)
+* limit active connection to 2
+* require unique nick (or maybe use some id?)
