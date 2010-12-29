@@ -5,6 +5,7 @@ public class Player {
     private final float X_MAX = 1f;
 	
 	private String nick;
+	private boolean ready = false;
     
     // Game stuff
     private float x;
@@ -30,6 +31,9 @@ public class Player {
     public String getNick(){
         return this.nick;
     }
+    
+    public boolean isReady(){ return ready; }
+    public void setReady(boolean ready) { this.ready = ready; }
 
 	public float getX() { return x; }
 	public void setX(float x) {	this.x = x; }

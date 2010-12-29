@@ -44,6 +44,10 @@ public class ConnectionThread extends Thread {
         out.println(message);
     }
     
+    public void sendMessage(Command command){
+    	sendMessage(command.toString());
+    }
+    
     public void kill() throws IOException {
         keep = false;
         

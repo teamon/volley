@@ -15,6 +15,7 @@ public class ClientFrame extends JFrame {
 	private class EmptyNickException extends Exception {}
 	// Settings
     private JButton connectButton;
+    private JButton readyButton;
     private JLabel portLabel;
     private JTextField portTextField;
     private JLabel hostLabel;
@@ -84,8 +85,19 @@ public class ClientFrame extends JFrame {
 	            else connect();
             }
         });
-		connectButton.setBounds(100, 104, 117, 29);
+		connectButton.setBounds(57, 104, 117, 29);
         settingsPanel.add(connectButton);
+        
+        readyButton = new JButton("Ready");
+        readyButton.setEnabled(false);
+        readyButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	client.ready();
+            	readyButton.setEnabled(false);           	
+            }
+        });
+        readyButton.setBounds(186, 104, 117, 29);
+        settingsPanel.add(readyButton);
 
         
         pane.add(settingsPanel); // TODO: Extract settingsPanel into separate class
@@ -130,7 +142,6 @@ public class ClientFrame extends JFrame {
 		game.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		game.setBounds(6, 6, 430, 410);
 		pane.add(game);
-		
 
     }
     
@@ -141,7 +152,11 @@ public class ClientFrame extends JFrame {
     public Client getClient(){
         return this.client;
     }
-
+    
+    public ClientGame getGame(){
+    	return this.game;
+    }
+    
     protected void connect(){
         Logger.debug("Connecting...");
         try {
@@ -154,17 +169,20 @@ public class ClientFrame extends JFrame {
             client.connect(host, port, new Player(nick));
             Logger.debug("Client connected");
             
-            // Disable settings
+            // disable settings
             portTextField.setEnabled(false);
             hostTextField.setEnabled(false);
             nickTextField.setEnabled(false);
             connectButton.setText("Disconnect");
             
-            // Enable chat
+            // enable chat
             chatTextArea.setEnabled(true);
             chatMessageInput.setEnabled(true);
+            
+            // enable ready button
+            readyButton.setEnabled(true);
         
-    		game.start(); // TEMPORARY!!
+//    		game.start(); // TEMPORARY!!
         } catch (EmptyNickException e){
         	showError("Nick can't be empty");
         } catch (IOException e){
@@ -175,8 +193,7 @@ public class ClientFrame extends JFrame {
     
     protected void disconnect(){
         client.disconnect();
-        Logger.error("DISCONNECT");
-        //game.stop();
+//        game.stop();
         
         // enable settings
         portTextField.setEnabled(true);
@@ -187,6 +204,9 @@ public class ClientFrame extends JFrame {
         // disable chat
         chatTextArea.setEnabled(false);
         chatMessageInput.setEnabled(false);
+        
+        // disable ready button
+        readyButton.setEnabled(false);
     }
 
     protected void showError(String message){

@@ -22,10 +22,9 @@ public class Client implements MessageListener {
         this.connection.start();
 		sendMessage(Command.newPlayerRegistered(player));
     }
-    
-    public void sendMessage(String message){
-        Logger.debug("Client#sendMessage(" + message + ")");
-        this.connection.sendMessage(message);
+        
+    public void sendMessage(Command command){
+    	this.connection.sendMessage(command.toString());
     }
     
     public void processMessage(ConnectionThread from, String message){
@@ -65,6 +64,10 @@ public class Client implements MessageListener {
             		}
             	}
             	break;
+            	
+            case 'o':
+            	frame.getGame().start();
+            	break;
                 
             default:  
                 Logger.error("Unknown command: " + message);
@@ -96,6 +99,11 @@ public class Client implements MessageListener {
     
     public boolean isConnected(){
     	return this.connection != null;
+    }
+    
+    public void ready(){
+    	player.setReady(true);
+    	sendMessage(Command.playerReady());
     }
 
     public static void main(String args[]) {

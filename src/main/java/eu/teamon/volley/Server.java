@@ -98,6 +98,14 @@ public class Server extends SmartThread implements MessageListener {
 				
 				break;
 				
+			case 'g': // player ready "g [NICK]"
+				Logger.debug("User ready: " + chunks[1]);
+				if(chunks.length == 2){
+					this.connections.get(from).setReady(true);
+					tryStartGame();					
+				}
+				break;
+				
             default:
                 Logger.error("Unknown command: " + message);
                 break;
@@ -108,15 +116,29 @@ public class Server extends SmartThread implements MessageListener {
         this.connections.remove(connection);
     }
     
-    public void sendToAll(String message){
-    	for (Map.Entry<ConnectionThread, Player> entry : connections.entrySet()) {
-            Logger.debug("Sending: " + message);
-            entry.getKey().sendMessage(message);
+    public void sendToAll(Command command){
+    	String message = command.toString();
+    	for (ConnectionThread ct : connections.keySet()) {
+            ct.sendMessage(message);
         }
     }
     
     public Collection<Player> getPlayers(){
     	return connections.values();
+    }
+    
+    protected void tryStartGame(){
+    	if(allPlayersReady()){
+    		game.start();
+			sendToAll(Command.startGame());	
+    	}
+    }
+    
+    protected boolean allPlayersReady(){
+    	for(Player player : connections.values()){
+    		if(!player.isReady()) return false;
+    	}
+    	return true;
     }
     
     public static void main(String args[]) {
