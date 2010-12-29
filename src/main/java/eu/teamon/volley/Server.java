@@ -59,57 +59,50 @@ public class Server extends SmartThread implements MessageListener {
     }
     
     public void processMessage(ConnectionThread from, String message){
-        Logger.debug("Server#processMessage(" + message + ")");
-        String[] chunks = message.split(" ", 2);
-    
-        switch(chunks[0].charAt(0)){
-            case 'c': // chat "c [CONTENT]"
-            	if(chunks.length == 2){
-            		sendToAll(Command.chatMessage(this.connections.get(from), chunks[1]));
-            	}
-                break;
-
-			case 'r': // register new user "r [NICK]"
-				Logger.debug("User registered: " + chunks[1]);
-				if(chunks.length == 2){
-					this.connections.get(from).setNick(chunks[1]);
-					sendToAll(message);	
-					
-					// send list of all players to new player
-					for (Player player : connections.values()) {
-			            from.sendMessage(Command.newPlayerRegistered(player));
-			        }
-					
-				}
-				break;
+    	Command cmd = Command.parse(message);
+    	switch(cmd.id){
+    		case Command.CLIENT_CHAT_MESSAGE:
+    		{
+    			sendToAll(Command.chatMessage(this.connections.get(from), cmd.args[0]));
+    		}
+    		break;
+    		
+    		case Command.PLAYER_REGISTERED:
+    		{
+    			this.connections.get(from).setNick(cmd.args[0]);
+				sendToAll(cmd);	
 				
-			case 'm': // player moving "m [l|r] [0|1]"
-				if(chunks.length == 2){
-					String[] dirAndState = chunks[1].split(" ", 2);
-					Player player = this.connections.get(from);
-					//Logger.debug("dirAndState[0] = " + dirAndState[0]);
-					//Logger.debug("dirAndState[1] = " + dirAndState[1]);
-					if(dirAndState[0].equals("r")){
-						player.setMovingRight(dirAndState[1].equals("1"));
-					} else if(dirAndState[0].equals("l")){
-						player.setMovingLeft(dirAndState[1].equals("1"));
-					}
-				}
-				
-				break;
-				
-			case 'g': // player ready "g [NICK]"
-				Logger.debug("User ready: " + chunks[1]);
-				if(chunks.length == 2){
-					this.connections.get(from).setReady(true);
-					tryStartGame();					
-				}
-				break;
-				
-            default:
-                Logger.error("Unknown command: " + message);
-                break;
-        }
+				// send list of all players to new player
+				for (Player player : connections.values()) {
+		            from.sendMessage(Command.newPlayerRegistered(player));
+		        }
+    		}
+    		break;
+    		
+    		case Command.MOVING_LEFT:
+    		{
+    			this.connections.get(from).setMovingLeft(cmd.args[0] == "1");
+    		}
+    		break;
+    		
+    		case Command.MOVING_RIGHT:
+    		{
+    			this.connections.get(from).setMovingRight(cmd.args[0] == "1");
+    		}
+    		break;
+    		
+    		case Command.PLAYER_READY:
+    		{
+    			this.connections.get(from).setReady(true);
+    			tryStartGame();
+    		}
+    		break;
+    		
+    		default:
+    			Logger.error("Unknown command: " + message);
+    			break;
+    			
+    	}
     }
     
     public void remove(ConnectionThread connection){

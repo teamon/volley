@@ -28,51 +28,46 @@ public class Client implements MessageListener {
     }
     
     public void processMessage(ConnectionThread from, String message){
-        Logger.debug("Client#processMessage(" + message + ")");
-        
-        String[] chunks = message.split(" ", 2);
-        switch(chunks[0].charAt(0)){
-            case 'c': // c [nick] [content]
-                if(chunks.length == 2){
-                    String[] nickAndContent = chunks[1].split(" ", 2);
-                    if(nickAndContent.length == 2){
-                    	Player player = players.get(nickAndContent[0]);
-                    	if(player != null){
-                    		frame.addChatMessage(player, nickAndContent[1]);
-                    	}
-                    }   
-                }
-                break;
-                
-            case 's': // s [nick] [xpos] [ypos]
-            	if(chunks.length == 2){
-            		String[] nickAndPosition = chunks[1].split(" ", 3);
-            		Player player = this.players.get(nickAndPosition[0]);
-            		if(player != null){
-            			player.setX(Float.parseFloat(nickAndPosition[1]));
-            			player.setY(Float.parseFloat(nickAndPosition[2]));
-            		}
-            		
+    	Command cmd = Command.parse(message);
+    	switch(cmd.id){
+    		case Command.SERVER_CHAT_MESSAGE:
+    		{
+    			Player player = players.get(cmd.args[0]);
+    			if(player != null){
+            		frame.addChatMessage(player, cmd.args[1]);
             	}
-            	break;
-            	
-            case 'r': // r [nick]
-            	// register new game player
-            	if(chunks.length == 2){
-            		if(!players.containsKey(chunks[1])){
-            			players.put(chunks[1], new Player(chunks[1]));
-            		}
-            	}
-            	break;
-            	
-            case 'o':
-            	frame.getGame().start();
-            	break;
-                
-            default:  
-                Logger.error("Unknown command: " + message);
+    		}
+    		break;
+    		
+    		case Command.PLAYER_POSITION:
+    		{
+        		Player player = this.players.get(cmd.args[0]);
+        		if(player != null){
+        			player.setX(Float.parseFloat(cmd.args[1]));
+        			player.setY(Float.parseFloat(cmd.args[2]));
+        		}
+    		}
+    		break;
+    		
+    		case Command.PLAYER_REGISTERED:
+    		{
+    			String nick = cmd.args[0];
+        		if(!players.containsKey(nick)){
+        			players.put(nick, new Player(nick));
+        		}
+    		}
+    		break;
+    		
+    		case Command.START_GAME:
+    		{
+    			frame.getGame().start();
+    		}
+    		break;
+    		
+    		default:  
+    			Logger.error("Unknown command: " + message);
                 break;
-        }
+    	}
     }
     
     public void remove(ConnectionThread connection){

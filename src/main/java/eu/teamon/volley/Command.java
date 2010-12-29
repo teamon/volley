@@ -2,20 +2,28 @@ package eu.teamon.volley;
 
 public class Command {
 	public int id;
-	public Object[] args;
+	public String[] args;
 	
-	public Command(int id, Object... args){
+	public Command(int id, String... args){
 		this.id = id;
 		this.args = args;
 	}
 	
 	public String toString(){
-		return Utils.join(Utils.prepend(this.id, this.args), ":");
+		return Utils.join(Utils.prepend(this.id, this.args), SEPARATOR);
 	}
+	
+	public static Command parse(String message){
+		String[] chunks = message.split(SEPARATOR, 2);
+		return new Command(Integer.parseInt(chunks[0]), chunks[1].split(SEPARATOR));
+	}
+	
+	public static final String SEPARATOR = "$";
 	
 
 	public static final int PLAYER_REGISTERED 	= 1;
-	public static final int CHAT_MESSAGE 		= 2;
+	public static final int CLIENT_CHAT_MESSAGE = 2;
+	public static final int SERVER_CHAT_MESSAGE = 2;
 	public static final int MOVING_LEFT 		= 3;
 	public static final int MOVING_RIGHT 		= 4;
 	public static final int PLAYER_POSITION 	= 5;
@@ -27,11 +35,11 @@ public class Command {
 	}
 	
 	public static Command chatMessage(Player player, String message){
-		return new Command(CHAT_MESSAGE, player.getNick(), message);
+		return new Command(SERVER_CHAT_MESSAGE, player.getNick(), message);
 	}
 	
 	public static Command chatMessage(String message){
-		return new Command(CHAT_MESSAGE, message);
+		return new Command(CLIENT_CHAT_MESSAGE, message);
 	}
 	
 //	public static Command moving(Player player){
@@ -40,15 +48,15 @@ public class Command {
 	
 
 	public static Command movingLeft(boolean moving){
-		return new Command(MOVING_LEFT, moving ? 1 : 0);
+		return new Command(MOVING_LEFT, moving ? "1" : "0");
 	}
 	
 	public static Command movingRight(boolean moving){
-		return new Command(MOVING_RIGHT, moving ? 1 : 0);
+		return new Command(MOVING_RIGHT, moving ? "1" : "0");
 	}
 	
 	public static Command playerPosition(Player player){
-		return new Command(PLAYER_POSITION, player.getNick(), player.getX(), player.getY());
+		return new Command(PLAYER_POSITION, player.getNick(), Float.toString(player.getX()), Float.toString(player.getY()));
 	}
 	
 	public static Command playerReady(){
