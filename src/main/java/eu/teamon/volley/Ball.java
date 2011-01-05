@@ -5,13 +5,13 @@ public class Ball {
 	private Vec<Float> vel;
 
 	public Ball(){
-		this.pos = new Vec<Float>(0f,0f);
-		this.vel = new Vec<Float>(0f,0f);
+		this.pos = new FloatVec(0f,0f);
+		this.vel = new FloatVec(0f,0f);
 	}
 	
 	public Ball(Vec<Float> pos){
 		this.pos = pos;
-		this.vel = new Vec<Float>(0f, 0f);
+		this.vel = new FloatVec(0f, 0f);
 	}
 
 	public Vec<Float> getPos(){ return this.pos; }

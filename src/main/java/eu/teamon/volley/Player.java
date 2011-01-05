@@ -1,27 +1,27 @@
 package eu.teamon.volley;
 
 public class Player {
-    private final float X_SPEED = 0.01f;
-    private final float JUMP_SPEED = 0.07f;
-    private final float X_MAX = 1f;
-    private final float Y_MAX = 1f;
-    public final int LEFT = -1;
-    public final int RIGHT = 1;
-    public final float TIME = 1f;
-    public final float GRAVITY = 0.003f; // 9.81
+    private static final float X_SPEED = 0.01f;
+    private static final float JUMP_SPEED = 0.07f;
+    private static final float X_MAX = 1f;
+    private static final float Y_MAX = 1f;
+    public static final int LEFT = -1;
+    public static final int RIGHT = 1;
 	
 	private String nick;
 	private boolean ready = false;
     
     // Game stuff
 	
-	private Vec<Float> pos = new Vec<Float>(0f, 0f);
-	private Vec<Float> vel = new Vec<Float>(0f, 0f);
+	private Vec<Float> pos = new FloatVec(0f, 0f);
+	private Vec<Float> vel = new FloatVec(0f, 0f);
     private int side;
     
 	private boolean movingLeft = false;
 	private boolean movingRight = false;    
 	private boolean jumping = false;
+	
+	private boolean hasBall = false;
     
 	public Player(){
     	this("");
@@ -40,6 +40,8 @@ public class Player {
     public Player(int side){
         this.nick = "";
         this.side = side;
+        if(side == LEFT) this.hasBall = true;
+        else this.hasBall = false;
         pos.x = side * 0.75f;
         Logger.debug("Player created, side = " + side);
     }
@@ -67,6 +69,8 @@ public class Player {
     public void setReady(boolean ready) { 
     	this.ready = ready; 
     }
+    
+    public boolean hasBall(){ return this.hasBall; }
 	
 	public int getSide() { 
 		return side; 
@@ -111,8 +115,8 @@ public class Player {
 		}
 		
 		if(jumping || pos.y > 0){
-			vel.y -= GRAVITY*TIME;
-			pos.y += vel.y*TIME;
+			vel.y -= Game.GRAVITY*Game.TIME;
+			pos.y += vel.y*Game.TIME;
 			
 			if(pos.y < 0) pos.y = 0f;
 			else if(pos.y > Y_MAX) pos.y = Y_MAX;
@@ -126,7 +130,7 @@ public class Player {
 		}
 		
 		if(vel.x != 0){
-			pos.x += vel.x*TIME;
+			pos.x += vel.x*Game.TIME;
 			
 			if(side*pos.x > X_MAX) pos.x = side*X_MAX;
 			else if(side*pos.x < 0) pos.x = 0f;

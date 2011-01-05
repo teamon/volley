@@ -5,20 +5,14 @@ package eu.teamon.volley;
  *
  */
 
-public class Vec<T> {
+public abstract class Vec<T extends Number> {
 	public T x;
 	public T y;
-	
-//	public Vec(){
-//		this(0, 0);
-//	}
-	
-//	public Vec(String x, String y){
-//		this(Float.parseFloat(x), Float.parseFloat(y));
-//	}
 	
 	public Vec(T x, T y){
 		this.x = x;
 		this.y = y;
 	}
+	
+	abstract public Vec<T> add(Vec<T> that);
 }

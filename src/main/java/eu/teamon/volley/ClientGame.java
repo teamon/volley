@@ -106,7 +106,7 @@ public class ClientGame extends JPanel {
     }
     
     protected Vec<Integer> coords(Vec<Float> vec){
-    	return new Vec<Integer>(X(vec.x), Y(vec.y));
+    	return new IntVec(X(vec.x), Y(vec.y));
     }
     
     protected Color playerColor(Player player){
