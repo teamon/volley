@@ -40,9 +40,10 @@ public class Command {
 	public static final int DISCONNECT			= 9;
 	public static final int PLAYER_DISCONNECTED	= 10;
 	public static final int STOP_GAME			= 11;
+	public static final int BALL_POSITION		= 12;
 	
 	public static Command newPlayerRegistered(Player player){
-		return new Command(PLAYER_REGISTERED, player.getNick());
+		return new Command(PLAYER_REGISTERED, player.getNick(), Integer.toString(player.getSide()));
 	}
 	
 	public static Command chatMessage(Player player, String message){
@@ -62,7 +63,12 @@ public class Command {
 	}
 	
 	public static Command playerPosition(Player player){
-		return new Command(PLAYER_POSITION, player.getNick(), Float.toString(player.getX()), Float.toString(player.getY()));
+		Vec<Float> pos = player.getPos();
+		return new Command(PLAYER_POSITION, player.getNick(), Float.toString(pos.x), Float.toString(pos.y));
+	}
+	
+	public static Command ballPosition(Ball ball){
+		return new Command(BALL_POSITION, Float.toString(ball.getPos().x), Float.toString(ball.getPos().y));
 	}
 	
 	public static Command playerReady(){
@@ -80,4 +86,5 @@ public class Command {
 	public static Command playerDisconnected(Player player){
 		return new Command(PLAYER_DISCONNECTED, player.getNick());
 	}
+
 }

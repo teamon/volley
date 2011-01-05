@@ -37,7 +37,7 @@ public class Server extends SmartThread implements MessageListener {
             try {
             	if(this.connections.size() < CONNECTIONS_LIMIT){
                     ConnectionThread ct = new ConnectionThread(this, socket.accept());
-                    this.connections.put(ct, new Player());
+                    this.connections.put(ct, new Player((this.connections.size()*2)-1));
                     Logger.debug("Client connected. Clients num: " + this.connections.size());
                     ct.start();		
             	} else {
@@ -81,12 +81,13 @@ public class Server extends SmartThread implements MessageListener {
     		
     		case Command.PLAYER_REGISTERED:
     		{
-    			this.connections.get(from).setNick(cmd.args[0]);
-				sendToAll(cmd);	
+    			Player player = this.connections.get(from);
+    			player.setNick(cmd.args[0]);
+				sendToAll(Command.newPlayerRegistered(player));	
 				
 				// send list of all players to new player
-				for (Player player : connections.values()) {
-		            from.sendMessage(Command.newPlayerRegistered(player));
+				for (Player p : connections.values()) {
+		            from.sendMessage(Command.newPlayerRegistered(p));
 		        }
     		}
     		break;
@@ -152,7 +153,7 @@ public class Server extends SmartThread implements MessageListener {
     protected void tryStartGame(){
     	if(ready()){
     		game.start();
-			sendToAll(Command.startGame());	
+			sendToAll(Command.startGame());
     	}
     }
     

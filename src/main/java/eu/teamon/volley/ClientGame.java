@@ -11,11 +11,13 @@ public class ClientGame extends JPanel {
 	private final int HEIGHT = 410;
 	
 	private Client client;
+	private Ball ball;
 
 	private SmartThread gameThread;
 	
     public ClientGame(Client client){
     	this.client = client;
+    	this.ball = new Ball();
     	
 		setSize(WIDTH, HEIGHT);
 		this.addKeyListener(new KeyAdapter(){
@@ -87,22 +89,51 @@ public class ClientGame extends JPanel {
     	Logger.debug("Game started");
     }
     
+    public void setBallPosition(Vec<Float> pos){
+    	this.ball.setPosition(pos);
+    }
+    
     public void stop(){
     	if(gameThread != null) gameThread.kill();    	
     }
+    
+    protected int X(float x){
+    	return (int)((x+1f)/2 * WIDTH);
+    }
+    
+    protected int Y(float y){
+    	return (int)((1f - y) * HEIGHT);
+    }
+    
+    protected Vec<Integer> coords(Vec<Float> vec){
+    	return new Vec<Integer>(X(vec.x), Y(vec.y));
+    }
+    
+    protected Color playerColor(Player player){
+    	switch(player.getSide()){
+    		case 1: return Color.red;
+    		case -1: return Color.blue;
+    		default: return Color.black;
+    	}
+    }
 
-  	public void paintComponent(Graphics g){
+  	public void paintComponent(Graphics gfx){
+  		Graphics2D g = (Graphics2D)gfx;
   		g.setColor(Color.WHITE);
   		g.clearRect(0, 0, WIDTH, HEIGHT);
   		
-  		if(gameThread != null && gameThread.isAlive()){
-			g.setColor(Color.RED);
-			
+  		if(gameThread != null && gameThread.isAlive()){			
+			// players
 			for(Player player : client.getPlayers()){
-				int x = (int)((player.getX()+1f)/2 * WIDTH);
-				int y = (int)((1f - player.getY()) * HEIGHT);
-				g.fillRect(x-25, y-50, 50, 50);
+				Vec<Integer> pos = coords(player.getPos());
+				g.setPaint(playerColor(player));
+				g.fillRect(pos.x-25, pos.y-50, 50, 50);
 			}
+			
+			// ball
+			g.setPaint(Color.black);
+			Vec<Integer> ballPos = coords(ball.getPos());
+			g.fillOval(ballPos.x-20, ballPos.y-20, 40, 40);
   		}
 		
 	}
