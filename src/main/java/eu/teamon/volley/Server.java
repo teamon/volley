@@ -110,6 +110,14 @@ public class Server extends SmartThread implements MessageListener {
     		}
     		break;
     		
+    		case Command.SERVE:
+    		{
+    			if(game.isWaiting()){
+    				game.serve(this.connections.get(from));
+    			}
+    		}
+    		break;
+    		
     		case Command.PLAYER_READY:
     		{
     			this.connections.get(from).setReady(true);

@@ -16,8 +16,13 @@ public class Ball {
 
 	public Vec<Float> getPos(){ return this.pos; }
 	
-	public void setPosition(Vec<Float> pos){
+	public void setPos(Vec<Float> pos){
 		this.pos = pos;
+	}
+
+	public void move(){
+		vel.y -= Game.GRAVITY*Game.TIME;
+		pos.y += vel.y*Game.TIME;
 	}
 
 

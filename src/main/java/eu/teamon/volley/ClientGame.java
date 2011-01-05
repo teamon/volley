@@ -36,7 +36,7 @@ public class ClientGame extends JPanel {
 						break;
 						
 					case KeyEvent.VK_SPACE:
-						
+						ClientGame.this.client.sendMessage(Command.serve());
 						break;
 						
 					default:
@@ -68,7 +68,14 @@ public class ClientGame extends JPanel {
 			}
 
 			public void keyTyped(KeyEvent e) {
-				Logger.debug("Key typed: " + e.getKeyCode());
+				switch(e.getKeyChar()){
+					case ' ': // space
+						ClientGame.this.client.sendMessage(Command.serve());
+						break;
+					
+					default:
+						break;
+				}
 			}
 		});
 	}
@@ -90,7 +97,7 @@ public class ClientGame extends JPanel {
     }
     
     public void setBallPosition(Vec<Float> pos){
-    	this.ball.setPosition(pos);
+    	this.ball.setPos(pos);
     }
     
     public void stop(){

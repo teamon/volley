@@ -4,8 +4,9 @@ public class Game {
     public static final float TIME = 0.4f;
     public static final float GRAVITY = 0.003f; // 9.81
     
-    private static final int WAITING = 1;
-    private static final int RUNNING = 2;
+    private static final int WAITING 	= 1;
+    private static final int RUNNING	= 2;
+    private static final int SCORED		= 3;
     
 	private Server server;
 	private SmartThread gameThread;
@@ -28,7 +29,7 @@ public class Game {
 		
 		gameThread = new SmartThread(){
 			public void run(){
-				state = WAITING;
+				state = SCORED;
 				
 				for(Player player : server.getPlayers()){
 					player.move();
@@ -59,12 +60,22 @@ public class Game {
 		return null;
 	}
 	
+	public boolean isWaiting(){ return state == WAITING; }
+	
+	public void serve(Player player){
+		if(player == findPlayerWithBall()){
+			state = RUNNING;
+		}
+	}
+	
 	public void process(){
-		if(state == WAITING){
+		if(state == SCORED){
 			Player player = findPlayerWithBall();
 			if(player != null){
-				ball.setPosition(player.getPos().add(new FloatVec(0f, 0.3f)));
+				ball.setPos(player.getPos().add(new FloatVec(0f, 0.5f)));
 			}
+			
+			state = WAITING;
 		}
 		
 		server.sendToAll(Command.ballPosition(ball));
@@ -74,5 +85,8 @@ public class Game {
 				server.sendToAll(Command.playerPosition(player));
 			}
 		}
+		
+		if(state == RUNNING) ball.move();
+		server.sendToAll(Command.ballPosition(ball));
 	}
 }
