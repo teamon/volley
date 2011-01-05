@@ -28,12 +28,8 @@ public class Client implements MessageListener {
     }
     
     public void processMessage(ConnectionThread from, String message){
-    	Logger.debug("client got: " + message);
-
     	Command cmd = Command.parse(message);
-    	
-    	Logger.debug("client got: " + cmd.toString());
-    	
+    	    	
     	switch(cmd.id){
     		case Command.SERVER_CHAT_MESSAGE:
     		{

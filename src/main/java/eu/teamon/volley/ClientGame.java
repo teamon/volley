@@ -32,7 +32,7 @@ public class ClientGame extends JPanel {
 						break;
 						
 					case KeyEvent.VK_UP:
-						
+						ClientGame.this.client.sendMessage(Command.jumping(true));
 						break;
 						
 					case KeyEvent.VK_SPACE:
@@ -55,7 +55,7 @@ public class ClientGame extends JPanel {
 						break;
 						
 					case KeyEvent.VK_UP:
-
+						ClientGame.this.client.sendMessage(Command.jumping(false));
 						break;
 						
 					case KeyEvent.VK_SPACE:

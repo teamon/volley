@@ -15,6 +15,10 @@ public class Game {
 	}
 	
 	public void start(){
+		if(gameThread != null){
+			stop();
+		}
+		
 		gameThread = new SmartThread(){
 			public void run(){
 				for(Player player : server.getPlayers()){

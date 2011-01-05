@@ -2,10 +2,13 @@ package eu.teamon.volley;
 
 public class Player {
     private final float X_SPEED = 0.01f;
+    private final float JUMP_SPEED = 0.07f;
     private final float X_MAX = 1f;
+    private final float Y_MAX = 1f;
     public final int LEFT = -1;
     public final int RIGHT = 1;
-    public final float TIME = 1;
+    public final float TIME = 1f;
+    public final float GRAVITY = 0.003f; // 9.81
 	
 	private String nick;
 	private boolean ready = false;
@@ -18,6 +21,7 @@ public class Player {
     
 	private boolean movingLeft = false;
 	private boolean movingRight = false;    
+	private boolean jumping = false;
     
 	public Player(){
     	this("");
@@ -84,12 +88,20 @@ public class Player {
 	
 	public void setMovingLeft(boolean movingLeft) {	this.movingLeft = movingLeft; }
 	public void setMovingRight(boolean movingRight) { this.movingRight = movingRight; }
+	public void setJumping(boolean jumping) { 
+		if(!this.jumping && jumping && pos.y == 0){
+			vel.y = JUMP_SPEED;
+		}
+		this.jumping = jumping; 
+	}
 	
 	public boolean isMoving(){
 		return (movingLeft || movingRight);
 	}
 	
 	public boolean move(){
+		boolean moved = false;
+		
 		if(movingLeft) {
 			vel.x = -X_SPEED;
 		} else if(movingRight) {
@@ -98,10 +110,32 @@ public class Player {
 			vel.x = 0f;
 		}
 		
-		pos.x += vel.x*TIME;
-		pos.y += vel.y*TIME;	
+		if(jumping || pos.y > 0){
+			vel.y -= GRAVITY*TIME;
+			pos.y += vel.y*TIME;
+			
+			if(pos.y < 0) pos.y = 0f;
+			else if(pos.y > Y_MAX) pos.y = Y_MAX;
+			
+			if(pos.y == 0){ 
+				setJumping(false);
+				vel.y = 0f;
+			}
+			
+			moved = true;
+		}
 		
-		return (movingLeft || movingRight);
+		if(vel.x != 0){
+			pos.x += vel.x*TIME;
+			
+			if(side*pos.x > X_MAX) pos.x = side*X_MAX;
+			else if(side*pos.x < 0) pos.x = 0f;
+			moved = true;
+		}
+
+		
+
+		return moved;
 	}
 
 }

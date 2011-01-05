@@ -69,7 +69,7 @@ public class Server extends SmartThread implements MessageListener {
     }
     
     public void processMessage(ConnectionThread from, String message){
-    	Logger.debug("server got: " + message);
+//    	Logger.debug("server got: " + message);
     	Command cmd = Command.parse(message);
     	
     	switch(cmd.id){
@@ -95,14 +95,18 @@ public class Server extends SmartThread implements MessageListener {
     		case Command.MOVING_LEFT:
     		{
     			this.connections.get(from).setMovingLeft(cmd.args[0].equals("1"));
-    			Logger.debug("Moving left " + cmd.args[0].equals("1"));
     		}
     		break;
     		
     		case Command.MOVING_RIGHT:
     		{
     			this.connections.get(from).setMovingRight(cmd.args[0].equals("1"));
-    			Logger.debug("Moving right");
+    		}
+    		break;
+    		
+    		case Command.JUMPING:
+    		{
+    			this.connections.get(from).setJumping(cmd.args[0].equals("1"));
     		}
     		break;
     		
