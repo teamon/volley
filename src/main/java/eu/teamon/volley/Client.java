@@ -44,7 +44,7 @@ public class Client implements MessageListener {
     		{
         		Player player = this.players.get(cmd.args[0]);
         		if(player != null){
-        			player.setPos(new FloatVec(Float.parseFloat(cmd.args[1]), Float.parseFloat(cmd.args[2])));
+        			player.setPosition(new FloatVec(Float.parseFloat(cmd.args[1]), Float.parseFloat(cmd.args[2])));
         		}
     		}
     		break;

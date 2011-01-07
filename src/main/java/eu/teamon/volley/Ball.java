@@ -1,29 +1,26 @@
 package eu.teamon.volley;
 
-public class Ball {
-	private Vec<Float> pos;
-	private Vec<Float> vel;
+public class Ball extends Physical{
+    public static final float SIZE = 0.05f;
 
-	public Ball(){
-		this.pos = new FloatVec(0f,0f);
-		this.vel = new FloatVec(0f,0f);
+    public Ball(){
+		this(new FloatVec(0f,0f));
 	}
 	
 	public Ball(Vec<Float> pos){
-		this.pos = pos;
-		this.vel = new FloatVec(0f, 0f);
+		setPosition(pos);
+		setVelocity(new FloatVec(0f, 0f));
 	}
 
-	public Vec<Float> getPos(){ return this.pos; }
-	
-	public void setPos(Vec<Float> pos){
-		this.pos = pos;
-	}
-
-	public void move(){
-		vel.y -= Game.GRAVITY*Game.TIME;
-		pos.y += vel.y*Game.TIME;
-	}
+//
+//	public void move(){
+//		if(pos )
+//		
+//		vel.y -= Game.GRAVITY*Game.TIME;
+//		pos.y += vel.y*Game.TIME;
+//		
+//		
+//	}
 
 
 }

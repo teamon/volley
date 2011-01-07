@@ -9,6 +9,10 @@ import javax.swing.JPanel;
 public class ClientGame extends JPanel {
 	private final int WIDTH = 430;
 	private final int HEIGHT = 410;
+
+	private final int PLAYER_WIDTH = (int)(WIDTH * Player.WIDTH);
+	private final int PLAYER_HEIGHT = (int)(WIDTH * Player.HEIGHT);
+	private final int BALL_SIZE = (int)(WIDTH * Ball.SIZE);
 	
 	private Client client;
 	private Ball ball;
@@ -97,7 +101,7 @@ public class ClientGame extends JPanel {
     }
     
     public void setBallPosition(Vec<Float> pos){
-    	this.ball.setPos(pos);
+    	this.ball.setPosition(pos);
     }
     
     public void stop(){
@@ -132,15 +136,18 @@ public class ClientGame extends JPanel {
   		if(gameThread != null && gameThread.isAlive()){			
 			// players
 			for(Player player : client.getPlayers()){
-				Vec<Integer> pos = coords(player.getPos());
+				Vec<Integer> pos = coords(player.getPosition());
 				g.setPaint(playerColor(player));
-				g.fillRect(pos.x-25, pos.y-50, 50, 50);
+				
+				g.fillOval(pos.x-(PLAYER_WIDTH/2), pos.y-(PLAYER_HEIGHT*3/2), PLAYER_WIDTH, PLAYER_WIDTH);
+				
+				g.fillRect(pos.x-(PLAYER_WIDTH/2), pos.y-PLAYER_HEIGHT, PLAYER_WIDTH, PLAYER_HEIGHT);
 			}
 			
 			// ball
 			g.setPaint(Color.black);
-			Vec<Integer> ballPos = coords(ball.getPos());
-			g.fillOval(ballPos.x-20, ballPos.y-20, 40, 40);
+			Vec<Integer> ballPos = coords(ball.getPosition());
+			g.fillOval(ballPos.x-(BALL_SIZE/2), ballPos.y-(BALL_SIZE/2), BALL_SIZE, BALL_SIZE);
   		}
 		
 	}
