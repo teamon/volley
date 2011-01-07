@@ -1,22 +1,22 @@
 package eu.teamon.volley;
 
 public class Physical {
-	protected Vec<Float> pos = new FloatVec(0f, 0f);
-	protected Vec<Float> vel = new FloatVec(0f, 0f);
+	protected Vec pos = new Vec(0f, 0f);
+	protected Vec vel = new Vec(0f, 0f);
 	
-    public void setPosition(Vec<Float> pos){ 
+    public void setPosition(Vec pos){ 
     	this.pos = pos; 
     }
 
-    public Vec<Float> getPosition(){ 
+    public Vec getPosition(){ 
     	return pos; 
     }
     
-	public void setVelocity(Vec<Float> vel){
+	public void setVelocity(Vec vel){
 		this.vel = vel;
 	}
 	
-	public Vec<Float> getVelocity(){
+	public Vec getVelocity(){
 		return this.vel;
 	}
 }

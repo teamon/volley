@@ -69,12 +69,12 @@ public class Command {
 	}
 	
 	public static Command playerPosition(Player player){
-		Vec<Float> pos = player.getPosition();
+		Vec pos = player.getPosition();
 		return new Command(PLAYER_POSITION, player.getNick(), Float.toString(pos.x), Float.toString(pos.y));
 	}
 	
 	public static Command ballPosition(Ball ball){
-		Vec<Float> pos = ball.getPosition();
+		Vec pos = ball.getPosition();
 		return new Command(BALL_POSITION, Float.toString(pos.x), Float.toString(pos.y));
 	}
 	

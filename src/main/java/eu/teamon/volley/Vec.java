@@ -5,41 +5,53 @@ package eu.teamon.volley;
  *
  */
 
-public abstract class Vec<T extends Number> {
-	public T x;
-	public T y;
+public class Vec {
+	public float x;
+	public float y;
 	
-	public Vec(T x, T y){
+	public Vec(float x, float y){
 		this.x = x;
 		this.y = y;
 	}
 	
-	public Vec(double angle, double length){
-		this.x = Math.cos(angle)*length;
-		this.y = Math.sin(angle)*length;
+	public static Vec withAngleAndLength(float angle, float length){
+		return new Vec((float)(Math.cos(angle)*length), (float)(Math.sin(angle)*length));
 	}
 
-	abstract public Vec<T> add(Vec<T> that);
-	abstract public Vec<T> subtract(Vec<T> that);
-	abstract public Vec<T> negate();
-	abstract public Vec<T> negateX();
-	abstract public Vec<T> negateY();
-	abstract public T distanceTo(Vec<T> that);
+	public Vec add(Vec that){
+		return new Vec(this.x + that.x, this.y + that.y);
+	}
 	
-	public double getLength(){
-		return Math.sqrt(Math.pow(this.x.doubleValue(), 2) + Math.pow(this.y.doubleValue(), 2));
+	public Vec subtract(Vec that){
+		return new Vec(this.x - that.x, this.y - that.y);
+	}
+	
+	public float distanceTo(Vec that){
+		return (float)Math.sqrt(Math.pow(this.x - that.x, 2) + Math.pow(this.y - that.y, 2));
+	}
+	
+	public Vec negate(){
+		return new Vec(-this.x, -this.y);
+	}
+	
+	public Vec negateX(){
+		return new Vec(-this.x, this.y);
+	}
+	
+	public Vec negateY(){
+		return new Vec(this.x, -this.y);
+	}
+	
+	public float getLength(){
+		return (float)Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2));
 	}
 	
 	public double getAngle(){
-		return Math.asin(this.y.doubleValue()/getLength());
+		return Math.asin(this.y/getLength());
 	}
 	
-	abstract public Vec<T> withAngle(double angle);
-	
-	protected double calculateDistanceTo(Vec<T> that){
-		return Math.sqrt(Math.pow(this.x.doubleValue() - that.x.doubleValue(), 2) + Math.pow(this.y.doubleValue() - that.y.doubleValue(), 2));
+	public Vec withAngle(float angle){
+		return Vec.withAngleAndLength(angle, getLength());
 	}
-	
-	
-	
+		
 }

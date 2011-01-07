@@ -4,12 +4,12 @@ public class Ball extends Physical{
     public static final float SIZE = 0.05f;
 
     public Ball(){
-		this(new FloatVec(0f,0f));
+		this(new Vec(0f,0f));
 	}
 	
-	public Ball(Vec<Float> pos){
+	public Ball(Vec pos){
 		setPosition(pos);
-		setVelocity(new FloatVec(0f, 0f));
+		setVelocity(new Vec(0f, 0f));
 	}
 
 //

@@ -100,7 +100,7 @@ public class ClientGame extends JPanel {
     	Logger.debug("Game started");
     }
     
-    public void setBallPosition(Vec<Float> pos){
+    public void setBallPosition(Vec pos){
     	this.ball.setPosition(pos);
     }
     
@@ -116,8 +116,8 @@ public class ClientGame extends JPanel {
     	return (int)((1f - y) * HEIGHT);
     }
     
-    protected Vec<Integer> coords(Vec<Float> vec){
-    	return new IntVec(X(vec.x), Y(vec.y));
+    protected Vec coords(Vec vec){
+    	return new Vec(X(vec.x), Y(vec.y));
     }
     
     protected Color playerColor(Player player){
@@ -136,18 +136,18 @@ public class ClientGame extends JPanel {
   		if(gameThread != null && gameThread.isAlive()){			
 			// players
 			for(Player player : client.getPlayers()){
-				Vec<Integer> pos = coords(player.getPosition());
+				Vec pos = coords(player.getPosition());
 				g.setPaint(playerColor(player));
 				
-				g.fillOval(pos.x-(PLAYER_WIDTH/2), pos.y-(PLAYER_HEIGHT*3/2), PLAYER_WIDTH, PLAYER_WIDTH);
+				g.fillOval((int)pos.x-(PLAYER_WIDTH/2), (int)pos.y-(PLAYER_HEIGHT*3/2), PLAYER_WIDTH, PLAYER_WIDTH);
 				
-				g.fillRect(pos.x-(PLAYER_WIDTH/2), pos.y-PLAYER_HEIGHT, PLAYER_WIDTH, PLAYER_HEIGHT);
+				g.fillRect((int)pos.x-(PLAYER_WIDTH/2), (int)pos.y-PLAYER_HEIGHT, PLAYER_WIDTH, PLAYER_HEIGHT);
 			}
 			
 			// ball
 			g.setPaint(Color.black);
-			Vec<Integer> ballPos = coords(ball.getPosition());
-			g.fillOval(ballPos.x-(BALL_SIZE/2), ballPos.y-(BALL_SIZE/2), BALL_SIZE, BALL_SIZE);
+			Vec ballPos = coords(ball.getPosition());
+			g.fillOval((int)ballPos.x-(BALL_SIZE/2), (int)ballPos.y-(BALL_SIZE/2), BALL_SIZE, BALL_SIZE);
   		}
 		
 	}

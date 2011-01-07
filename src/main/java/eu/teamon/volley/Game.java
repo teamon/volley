@@ -15,7 +15,7 @@ public class Game {
 	
 	public Game(Server server){
 		this.server = server;
-		this.ball = new Ball(new FloatVec(0f, .5f));
+		this.ball = new Ball(new Vec(0f, .5f));
 	}
 	
 	public Ball getBall(){
@@ -71,7 +71,7 @@ public class Game {
 		if(state == SCORED){
 			Player player = findPlayerWithBall();
 			if(player != null){
-				ball.setPosition(new FloatVec(player.getSide()*0.5f, 0.5f));
+				ball.setPosition(new Vec(player.getSide()*0.5f, 0.5f));
 			}
 			
 			state = WAITING;
@@ -82,8 +82,8 @@ public class Game {
 		for(Player player : server.getPlayers()){
 			boolean moved = false;
 			
-			Vec<Float> pos = player.getPosition();
-			Vec<Float> vel = player.getVelocity();
+			Vec pos = player.getPosition();
+			Vec vel = player.getVelocity();
 			
 			if(player.isMovingLeft()) {
 				vel.x = -Player.X_SPEED;
@@ -128,8 +128,8 @@ public class Game {
 		}
 		
 		if(state == RUNNING){
-			Vec<Float> pos = ball.getPosition();
-			Vec<Float> vel = ball.getVelocity();
+			Vec pos = ball.getPosition();
+			Vec vel = ball.getVelocity();
 			
 			vel.y -= GRAVITY*TIME;
 			pos.y += vel.y*TIME;
@@ -138,8 +138,8 @@ public class Game {
 	}
 	
 	public void playerTouchingBall(Player player){
-		Vec<Float> nbp = ball.getPosition().subtract(player.getPosition());
-		Vec<Float> pp = new FloatVec(0,0);
+		Vec nbp = ball.getPosition().subtract(player.getPosition());
+		Vec pp = new Vec(0,0);
 		
 		if(nbp.y >= Player.HEIGHT){ // contact top
 			if(nbp.distanceTo(pp) <= (Player.WIDTH/2 + Ball.SIZE/2)){

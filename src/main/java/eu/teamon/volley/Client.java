@@ -44,14 +44,14 @@ public class Client implements MessageListener {
     		{
         		Player player = this.players.get(cmd.args[0]);
         		if(player != null){
-        			player.setPosition(new FloatVec(Float.parseFloat(cmd.args[1]), Float.parseFloat(cmd.args[2])));
+        			player.setPosition(new Vec(Float.parseFloat(cmd.args[1]), Float.parseFloat(cmd.args[2])));
         		}
     		}
     		break;
     		
     		case Command.BALL_POSITION:
     		{
-    			this.frame.getGame().setBallPosition(new FloatVec(Float.parseFloat(cmd.args[0]), Float.parseFloat(cmd.args[1])));
+    			this.frame.getGame().setBallPosition(new Vec(Float.parseFloat(cmd.args[0]), Float.parseFloat(cmd.args[1])));
     		}
     		break;
     		
