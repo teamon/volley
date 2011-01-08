@@ -33,7 +33,7 @@ public class ClientFrame extends JFrame {
     public ClientFrame() {
         setTitle("Volley Client");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		setBounds(100, 100, 764, 443);
+		setBounds(100, 100, 764, 463);
 
 		JPanel pane = new JPanel();
 		pane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -140,7 +140,7 @@ public class ClientFrame extends JFrame {
 		
 		game = new ClientGame(client);
 		game.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		game.setBounds(6, 6, 430, 410);
+		game.setBounds(6, 6, 430, 430);
 		pane.add(game);
 
     }

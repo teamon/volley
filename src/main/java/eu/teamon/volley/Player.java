@@ -7,8 +7,8 @@ public class Player extends Physical {
     public static final float Y_MAX = 1f;
     public static final int LEFT = -1;
     public static final int RIGHT = 1;
-    public static final float WIDTH = 0.08f;
-    public static final float HEIGHT = 0.08f;
+    public static final float WIDTH = 0.3f;
+    public static final float HEIGHT = 0.3f;
 	
 	private String nick;
 	private boolean ready = false;

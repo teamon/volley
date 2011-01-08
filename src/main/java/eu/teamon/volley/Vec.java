@@ -27,7 +27,9 @@ public class Vec {
 	}
 	
 	public float distanceTo(Vec that){
-		return (float)Math.sqrt(Math.pow(this.x - that.x, 2) + Math.pow(this.y - that.y, 2));
+		float d = (float)Math.sqrt(Math.pow(this.x - that.x, 2) + Math.pow(this.y - that.y, 2));
+		Logger.debug("(" + this.x + "," + this.y + ") <-> ("+ that.x + "," + that.y + ") => " + d);
+		return d;
 	}
 	
 	public Vec negate(){
@@ -46,12 +48,16 @@ public class Vec {
 		return (float)Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2));
 	}
 	
-	public double getAngle(){
-		return Math.asin(this.y/getLength());
+	public float getAngle(){
+		return (float)Math.asin(this.y/getLength());
 	}
 	
 	public Vec withAngle(float angle){
 		return Vec.withAngleAndLength(angle, getLength());
+	}
+	
+	public String toString(){
+		return "(" + this.x + "," + this.y + ")";
 	}
 		
 }

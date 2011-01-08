@@ -1,7 +1,7 @@
 package eu.teamon.volley;
 
 public class Game {
-    public static final float TIME = 0.4f;
+    public static final float TIME = 0.15f;
     public static final float GRAVITY = 0.003f; // 9.81
     
     private static final int WAITING 	= 1;
@@ -15,7 +15,7 @@ public class Game {
 	
 	public Game(Server server){
 		this.server = server;
-		this.ball = new Ball(new Vec(0f, .5f));
+		this.ball = new Ball(new Vec(0f, 1f));
 	}
 	
 	public Ball getBall(){
@@ -39,7 +39,7 @@ public class Game {
 				
 				while(keep) {
 					process();
-					try { Thread.sleep(10); } catch (InterruptedException e){ }
+					try { Thread.sleep(5); } catch (InterruptedException e){ }
 				}
 			}
 		};
@@ -71,7 +71,7 @@ public class Game {
 		if(state == SCORED){
 			Player player = findPlayerWithBall();
 			if(player != null){
-				ball.setPosition(new Vec(player.getSide()*0.5f, 0.5f));
+				ball.setPosition(new Vec(player.getSide()*0.5f, 1f));
 			}
 			
 			state = WAITING;
@@ -129,24 +129,41 @@ public class Game {
 		
 		if(state == RUNNING){
 			Vec pos = ball.getPosition();
-			Vec vel = ball.getVelocity();
 			
-			vel.y -= GRAVITY*TIME;
-			pos.y += vel.y*TIME;
-			server.sendToAll(Command.ballPosition(ball));
+			if(pos.y >= 0){
+				Vec vel = ball.getVelocity();
+				
+				vel.y -= GRAVITY*(TIME/2);
+				
+				pos.x += vel.x*(TIME/2);
+				pos.y += vel.y*(TIME/2);
+				if(pos.y < Ball.SIZE/2) pos.y = Ball.SIZE/2;
+				server.sendToAll(Command.ballPosition(ball));
+			}
 		}
 	}
 	
 	public void playerTouchingBall(Player player){
-		Vec nbp = ball.getPosition().subtract(player.getPosition());
+		Vec playerPos = player.getPosition().add(new Vec(0, Player.HEIGHT));
+		
+		Vec nbp = ball.getPosition().subtract(playerPos);
 		Vec pp = new Vec(0,0);
 		
-		if(nbp.y >= Player.HEIGHT){ // contact top
+		Logger.debug("ball: " + ball.getPosition() + ", player: " + player.getPosition() + "   =>   nbp = " + nbp);
+		
+		if(nbp.y >= 0){ // contact top
+			//Logger.debug(ball.getPosition().distanceTo(player.getPosition()) + "     dist = " + nbp.distanceTo(pp) + ", <= " + (Player.WIDTH/2 + Ball.SIZE/2));
 			if(nbp.distanceTo(pp) <= (Player.WIDTH/2 + Ball.SIZE/2)){
-				
+				Logger.debug("Contact TOP!");
+//				System.exit(0);
+				Vec nbv = ball.getVelocity().subtract(player.getVelocity());
+				float a = (-nbv.getAngle()) + 2*((float)(Math.PI/2) - nbp.getAngle());
+				Logger.debug(nbv + " ->" + nbv.withAngle(a));
+				ball.setVelocity(nbv.withAngle(a).add(player.getVelocity()));				
 			}
 		} else {
-			if(nbp.x > -(Player.WIDTH/2 + Ball.SIZE/2) && nbp.x <= (Player.WIDTH/2 + Ball.SIZE/2)){ // -A <= x <= A
+			if(nbp.x >= -(Player.WIDTH/2 + Ball.SIZE/2) && nbp.x <= (Player.WIDTH/2 + Ball.SIZE/2)){ // -A <= x <= A
+				Logger.debug("Contact SIDE!");
 				// Vbx = -(Vbx - Vpx) + Vpx = -Vbx + 2*Vpx
 				// Vby = (Vby - Vpy) + Vpy = Vby
 				ball.setVelocity(ball.getVelocity().subtract(player.getVelocity()).negateX().add(player.getVelocity()));

@@ -7,12 +7,13 @@ import java.awt.event.KeyEvent;
 import javax.swing.JPanel;
 
 public class ClientGame extends JPanel {
+	private final int SCALE = 430;
 	private final int WIDTH = 430;
-	private final int HEIGHT = 410;
+	private final int HEIGHT = 430;
 
-	private final int PLAYER_WIDTH = (int)(WIDTH * Player.WIDTH);
-	private final int PLAYER_HEIGHT = (int)(WIDTH * Player.HEIGHT);
-	private final int BALL_SIZE = (int)(WIDTH * Ball.SIZE);
+	private final int PLAYER_WIDTH = (int)(SCALE * Player.WIDTH/2);
+	private final int PLAYER_HEIGHT = (int)(SCALE * Player.HEIGHT/2);
+	private final int BALL_SIZE = (int)(SCALE * Ball.SIZE/2);
 	
 	private Client client;
 	private Ball ball;
@@ -109,11 +110,11 @@ public class ClientGame extends JPanel {
     }
     
     protected int X(float x){
-    	return (int)((x+1f)/2 * WIDTH);
+    	return (int)((x+1f)/2 * SCALE); // (-1.0 ; 1.0) -> (0.0 ; 1.0)
     }
     
     protected int Y(float y){
-    	return (int)((1f - y) * HEIGHT);
+    	return (int)((1f - (y/2)) * SCALE); // (2.0 ; 0.0) -> (0.0 ; 1.0)
     }
     
     protected Vec coords(Vec vec){
@@ -137,17 +138,29 @@ public class ClientGame extends JPanel {
 			// players
 			for(Player player : client.getPlayers()){
 				Vec pos = coords(player.getPosition());
+
+				
 				g.setPaint(playerColor(player));
-				
-				g.fillOval((int)pos.x-(PLAYER_WIDTH/2), (int)pos.y-(PLAYER_HEIGHT*3/2), PLAYER_WIDTH, PLAYER_WIDTH);
-				
+				g.fillOval((int)pos.x-(PLAYER_WIDTH/2), (int)pos.y-(PLAYER_HEIGHT+PLAYER_WIDTH/2), PLAYER_WIDTH, PLAYER_WIDTH);
 				g.fillRect((int)pos.x-(PLAYER_WIDTH/2), (int)pos.y-PLAYER_HEIGHT, PLAYER_WIDTH, PLAYER_HEIGHT);
+				
+				
+				// debug
+				g.setPaint(Color.cyan);
+				g.fillOval((int)pos.x-5, (int)pos.y-5, 10, 10);
+				g.fillOval((int)pos.x-5, (int)(pos.y - PLAYER_HEIGHT)-5, 10, 10);
+				// eod
 			}
 			
 			// ball
 			g.setPaint(Color.black);
 			Vec ballPos = coords(ball.getPosition());
 			g.fillOval((int)ballPos.x-(BALL_SIZE/2), (int)ballPos.y-(BALL_SIZE/2), BALL_SIZE, BALL_SIZE);
+			
+			// debug
+			g.setPaint(Color.cyan);
+			g.fillOval((int)ballPos.x-5, (int)ballPos.y-5, 10, 10);
+			// eod
   		}
 		
 	}
