@@ -9,6 +9,7 @@ public class Client implements MessageListener {
     private Player player;
 	private Map<String, Player> players;
     private ConnectionThread connection;
+    private int set;
     
     public Client(ClientFrame frame){
     	this.frame = frame;
@@ -61,7 +62,9 @@ public class Client implements MessageListener {
         		if(players.containsKey(nick)){
         			players.get(nick).setSide(Integer.parseInt(cmd.args[1]));
         		} else {
-        			players.put(nick, new Player(nick, Integer.parseInt(cmd.args[1])));
+        			Player player = new Player(nick, Integer.parseInt(cmd.args[1]));
+        			player.setIndex(players.size());
+        			players.put(nick, player);
         		}
     		}
     		break;
@@ -70,6 +73,27 @@ public class Client implements MessageListener {
     		{
     			frame.getGame().start();
     			frame.disableChat();
+    		}
+    		break;
+    		
+    		case Command.NEW_SET:
+    		{
+    			this.set = Integer.parseInt(cmd.args[0]);
+    
+    			for(Player player : players.values()){
+    				frame.displayNick(player.getIndex(), player.getNick());
+    				frame.displayScore(player.getIndex(), player.getScore()[this.set]);
+    			}
+    		}
+    		break;
+    		
+    		case Command.SCORE:
+    		{
+    			Player player = players.get(cmd.args[0]);
+    			if(player != null){
+            		player.setScore(this.set, Integer.parseInt(cmd.args[1]));
+    				frame.displayScore(player.getIndex(), player.getScore()[this.set]);
+            	}
     		}
     		break;
     		

@@ -43,6 +43,8 @@ public class Command {
 	public static final int BALL_POSITION		= 12;
 	public static final int JUMPING				= 13;
 	public static final int SERVE				= 14;
+	public static final int SCORE				= 15;
+	public static final int NEW_SET				= 16;
 	
 	public static Command newPlayerRegistered(Player player){
 		return new Command(PLAYER_REGISTERED, player.getNick(), Integer.toString(player.getSide()));
@@ -76,6 +78,14 @@ public class Command {
 	public static Command ballPosition(Ball ball){
 		Vec pos = ball.getPosition();
 		return new Command(BALL_POSITION, Float.toString(pos.x), Float.toString(pos.y));
+	}
+	
+	public static Command score(Player player, int score){
+		return new Command(SCORE, player.getNick(), Integer.toString(score));
+	}
+	
+	public static Command newSet(int set){
+		return new Command(NEW_SET, Integer.toString(set));
 	}
 	
 	public static Command serve(){

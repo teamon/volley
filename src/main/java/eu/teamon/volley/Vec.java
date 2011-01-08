@@ -27,9 +27,7 @@ public class Vec {
 	}
 	
 	public float distanceTo(Vec that){
-		float d = (float)Math.sqrt(Math.pow(this.x - that.x, 2) + Math.pow(this.y - that.y, 2));
-		Logger.debug("(" + this.x + "," + this.y + ") <-> ("+ that.x + "," + that.y + ") => " + d);
-		return d;
+		return (float)Math.sqrt(Math.pow(this.x - that.x, 2) + Math.pow(this.y - that.y, 2));
 	}
 	
 	public Vec negate(){

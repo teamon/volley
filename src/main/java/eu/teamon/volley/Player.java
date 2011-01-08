@@ -12,6 +12,8 @@ public class Player extends Physical {
 	
 	private String nick;
 	private boolean ready = false;
+	private int[] score;
+	private int index = 0;
     
     // Game stuff
 	
@@ -24,13 +26,8 @@ public class Player extends Physical {
 	
 	private boolean hasBall = false;
     
-	public Player(){
-    	this("");
-    }
-    
     public Player(String nick){
-        this.nick = nick;
-        this.side = 0;
+    	this(nick, 0);
     }
     
     public Player(String nick, int side){
@@ -41,9 +38,12 @@ public class Player extends Physical {
     public Player(int side){
         this.nick = "";
         this.side = side;
+        resetScore();
+        
         if(side == LEFT) this.hasBall = true;
         else this.hasBall = false;
-        pos.x = side * 0.75f;
+        
+        setStartPosition();
         Logger.debug("Player created, side = " + side);
     }
     
@@ -55,8 +55,30 @@ public class Player extends Physical {
         return this.nick;
     }
     
-
+    public void score(int set){
+    	this.score[set]++;
+    }
     
+    public void setScore(int set, int score){
+    	this.score[set] = score;
+    }
+    
+    public int[] getScore(){
+    	return this.score;
+    }
+    
+    public void resetScore(){
+    	this.score = new int[5];
+    }
+    
+    public void setIndex(int index){
+    	this.index = index;
+    }
+    
+    public int getIndex(){
+    	return this.index;
+    }
+   
     public boolean isReady(){ 
     	return ready; 
     }
@@ -66,6 +88,10 @@ public class Player extends Physical {
     }
     
     public boolean hasBall(){ return this.hasBall; }
+    
+    public void setHasBall(boolean hasBall){
+    	this.hasBall = hasBall;
+    }
 	
 	public int getSide() { 
 		return side; 
@@ -84,6 +110,9 @@ public class Player extends Physical {
 		
 	public boolean isMovingRight() { return this.movingRight; }
 	
+	public void setStartPosition(){
+		setPosition(new Vec(side * 0.75f, 0f));
+	}
 	
 	public void setJumping(boolean jumping) { 
 		if(!this.jumping && jumping && pos.y == 0){

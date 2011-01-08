@@ -23,6 +23,9 @@ public class ClientFrame extends JFrame {
     private JLabel nickLabel;
     private JTextField nickTextField;
     
+    private JLabel[] scoreNickLabels = new JLabel[2];
+    private JLabel[] scoreScoreLabels = new JLabel[2];
+    
     //Chat
     private JTextField chatMessageInput;
     private JTextArea chatTextArea;
@@ -106,11 +109,11 @@ public class ClientFrame extends JFrame {
         // Chat
         JPanel chatPanel = new JPanel();
         chatPanel.setBorder(new TitledBorder(null, "Chat", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-        chatPanel.setBounds(448, 158, 310, 258);
+        chatPanel.setBounds(448, 231, 310, 205);
         chatPanel.setLayout(null);
 
         chatMessageInput = new JTextField();
-        chatMessageInput.setBounds(6, 225, 298, 28);
+        chatMessageInput.setBounds(6, 172, 298, 28);
         chatMessageInput.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String msg = chatMessageInput.getText();
@@ -123,14 +126,14 @@ public class ClientFrame extends JFrame {
 
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setLocation(6, 19);
-        scrollPane.setSize(298, 203);
+        scrollPane.setSize(298, 153);
 
 
         chatPanel.add(chatMessageInput);
         chatPanel.add(scrollPane);
         
         chatTextArea = new JTextArea();
-        scrollPane.setViewportView(chatTextArea);
+        scrollPane.setColumnHeaderView(chatTextArea);
         chatTextArea.setEditable(false);
         chatTextArea.setLineWrap(true);
         ((DefaultCaret)chatTextArea.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
@@ -142,11 +145,50 @@ public class ClientFrame extends JFrame {
 		game.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		game.setBounds(6, 6, 430, 430);
 		pane.add(game);
+		
+		JPanel scorePanel = new JPanel();
+		scorePanel.setBorder(new TitledBorder(null, "Score", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		scorePanel.setBounds(448, 148, 310, 84);
+		pane.add(scorePanel);
+		scorePanel.setLayout(null);
+		
+		scoreNickLabels[0] = new JLabel("");
+		scoreNickLabels[0].setHorizontalAlignment(SwingConstants.RIGHT);
+		scoreNickLabels[0].setBounds(6, 27, 70, 34);
+		scorePanel.add(scoreNickLabels[0]);
+		
+		JLabel labelColon = new JLabel(":");
+		labelColon.setHorizontalAlignment(SwingConstants.CENTER);
+		labelColon.setBounds(152, 27, 11, 34);
+		scorePanel.add(labelColon);
+		
+		scoreScoreLabels[0] = new JLabel("");
+		scoreScoreLabels[0].setHorizontalAlignment(SwingConstants.RIGHT);
+		scoreScoreLabels[0].setBounds(81, 27, 70, 34);
+		scorePanel.add(scoreScoreLabels[0]);
+		
+		scoreNickLabels[1] = new JLabel("");
+		scoreNickLabels[1].setHorizontalAlignment(SwingConstants.LEFT);
+		scoreNickLabels[1].setBounds(234, 27, 70, 34);
+		scorePanel.add(scoreNickLabels[1]);
+		
+		scoreScoreLabels[1] = new JLabel("");
+		scoreScoreLabels[1].setHorizontalAlignment(SwingConstants.LEFT);
+		scoreScoreLabels[1].setBounds(163, 27, 70, 34);
+		scorePanel.add(scoreScoreLabels[1]);
 
     }
     
     public void addChatMessage(Player player, String message){
     	chatTextArea.append(String.format("<%s> %s\n", player.getNick(), message));
+    }
+    
+    public void displayScore(int playerNo, int score){
+    	scoreScoreLabels[playerNo].setText(Integer.toString(score));
+    }
+    
+    public void displayNick(int playerNo, String nick){
+    	scoreNickLabels[playerNo].setText(nick);
     }
     
     public Client getClient(){

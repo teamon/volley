@@ -14,6 +14,8 @@ public class ClientGame extends JPanel {
 	private final int PLAYER_WIDTH = (int)(SCALE * Player.WIDTH/2);
 	private final int PLAYER_HEIGHT = (int)(SCALE * Player.HEIGHT/2);
 	private final int BALL_SIZE = (int)(SCALE * Ball.SIZE/2);
+	private final int NET_WIDTH = (int)(SCALE * Game.NET_WIDTH/2);
+	private final int NET_HEIGHT = (int)(SCALE * Game.NET_HEIGHT/2);
 	
 	private Client client;
 	private Ball ball;
@@ -156,6 +158,13 @@ public class ClientGame extends JPanel {
 			g.setPaint(Color.black);
 			Vec ballPos = coords(ball.getPosition());
 			g.fillOval((int)ballPos.x-(BALL_SIZE/2), (int)ballPos.y-(BALL_SIZE/2), BALL_SIZE, BALL_SIZE);
+			
+			// net
+			g.setPaint(Color.black);
+			
+			
+			
+			g.fillRect(WIDTH/2 - NET_WIDTH/2, HEIGHT-NET_HEIGHT, NET_WIDTH, NET_HEIGHT);
 			
 			// debug
 			g.setPaint(Color.cyan);
