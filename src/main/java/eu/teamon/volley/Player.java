@@ -31,25 +31,13 @@ public class Player extends Physical {
 	}
     
     public Player(String nick){
-    	this(nick, 0);
+    	this.nick = nick;
+    	this.side = 0;
+    	resetScore();
+    	setStartPosition();
     }
     
-    public Player(String nick, int side){
-        this(side);
-        this.nick = nick;
-    }
-    
-    public Player(int side){
-        this.nick = "";
-        this.side = side;
-        resetScore();
-        
-        if(side == LEFT) this.hasBall = true;
-        else this.hasBall = false;
-        
-        setStartPosition();
-    }
-    
+
     public void setNick(String nick){
     	this.nick = nick;
     }
