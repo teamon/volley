@@ -35,10 +35,18 @@ public class Game {
 			stop();
 		}
 		
+        // set players positions
+        int i = 0;
+        for(Player player : server.getPlayers()){
+        	player.setSide(i*2 - 1);
+        	server.sendToAll(Command.playerSide(player));
+        	i++;
+        }
+		
 		gameThread = new SmartThread(){
 			public void run(){
-				setupAfterScore();
 				newSet();
+				setupAfterScore();
 				
 				for(Player player : server.getPlayers()){
 					server.sendToAll(Command.playerPosition(player));
@@ -58,10 +66,14 @@ public class Game {
 	}
 	
 	public void stop(){
-		gameThread.kill();
-		server.sendToAll(Command.stopGame());
-		for(Player player : server.getPlayers()){
-			player.setReady(false);
+		if(gameThread != null){
+			gameThread.kill();
+			server.sendToAll(Command.stopGame());
+			for(Player player : server.getPlayers()){
+				player.setReady(false);
+			}
+			
+			this.set = 0;
 		}
 	}
 	
@@ -91,9 +103,14 @@ public class Game {
 		if(this.set < SET_NUM-1){
 			this.set++;
 			
+			Logger.debug("New set: " + this.set);
+			
 			for(Player player : server.getPlayers()){
 				player.setHasBall((player.getSide() == -1 && this.set % 2 == 0)	|| (player.getSide() == 1 && this.set % 2 == 1));
 			}
+			
+			Player p = this.findPlayerWithBall();
+			Logger.debug("Player with ball: " + p.getNick());
 			
 			server.sendToAll(Command.newSet(this.set));
 			sendScore();		

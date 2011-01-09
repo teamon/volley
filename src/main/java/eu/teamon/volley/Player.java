@@ -25,6 +25,10 @@ public class Player extends Physical {
 	private boolean jumping = false;
 	
 	private boolean hasBall = false;
+	
+	public Player(){
+		this("");
+	}
     
     public Player(String nick){
     	this(nick, 0);
@@ -44,7 +48,6 @@ public class Player extends Physical {
         else this.hasBall = false;
         
         setStartPosition();
-        Logger.debug("Player created, side = " + side);
     }
     
     public void setNick(String nick){

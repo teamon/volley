@@ -45,9 +45,14 @@ public class Command {
 	public static final int SERVE				= 14;
 	public static final int SCORE				= 15;
 	public static final int NEW_SET				= 16;
+	public static final int PLAYER_SIDE			= 17;
 	
 	public static Command newPlayerRegistered(Player player){
-		return new Command(PLAYER_REGISTERED, player.getNick(), Integer.toString(player.getSide()));
+		return new Command(PLAYER_REGISTERED, player.getNick());
+	}
+	
+	public static Command playerSide(Player player){
+		return new Command(PLAYER_SIDE, player.getNick(), Integer.toString(player.getSide()));
 	}
 	
 	public static Command chatMessage(Player player, String message){

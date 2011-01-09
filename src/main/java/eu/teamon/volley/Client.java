@@ -59,13 +59,17 @@ public class Client implements MessageListener {
     		case Command.PLAYER_REGISTERED:
     		{
     			String nick = cmd.args[0];
-        		if(players.containsKey(nick)){
-        			players.get(nick).setSide(Integer.parseInt(cmd.args[1]));
-        		} else {
-        			Player player = new Player(nick, Integer.parseInt(cmd.args[1]));
+        		if(!players.containsKey(nick)){
+        			Player player = new Player(nick);
         			player.setIndex(players.size());
         			players.put(nick, player);
         		}
+    		}
+    		break;
+    		
+    		case Command.PLAYER_SIDE:
+    		{
+    			players.get(cmd.args[0]).setSide(Integer.parseInt(cmd.args[1]));
     		}
     		break;
     		

@@ -37,9 +37,8 @@ public class Server extends SmartThread implements MessageListener {
             try {
             	if(this.connections.size() < CONNECTIONS_LIMIT){
                     ConnectionThread ct = new ConnectionThread(this, socket.accept());
-                    this.connections.put(ct, new Player((this.connections.size()*2)-1));
-                    Logger.debug("Client connected. Clients num: " + this.connections.size());
-                    ct.start();		
+                    this.connections.put(ct, new Player());
+                    ct.start();	                    
             	} else {
             		try {
             			Thread.sleep(500);
@@ -127,7 +126,6 @@ public class Server extends SmartThread implements MessageListener {
     		
     		case Command.DISCONNECT:
     		{
-    			// TODO: 
     			game.stop();
     			Player player = this.connections.get(from);
     			sendToAll(Command.playerDisconnected(player));
