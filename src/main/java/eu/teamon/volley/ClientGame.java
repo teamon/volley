@@ -88,9 +88,7 @@ public class ClientGame extends JPanel {
 	}
     
     public void start(){
-    	requestFocus();
-    	
-    	gameThread = new SmartThread(){
+       	gameThread = new SmartThread(){
     		public void run(){
     			while(keep) {
     				repaint();
@@ -101,6 +99,7 @@ public class ClientGame extends JPanel {
     	
     	gameThread.start();
     	Logger.debug("Game started");
+    	requestFocus();
     }
     
     public void setBallPosition(Vec pos){
@@ -108,7 +107,11 @@ public class ClientGame extends JPanel {
     }
     
     public void stop(){
-    	if(gameThread != null) gameThread.kill();    	
+    	if(gameThread != null) {
+    		gameThread.kill();
+    		gameThread = null;
+    	}
+    	repaint();
     }
     
     protected int X(float x){
@@ -160,11 +163,9 @@ public class ClientGame extends JPanel {
 			g.fillOval((int)ballPos.x-(BALL_SIZE/2), (int)ballPos.y-(BALL_SIZE/2), BALL_SIZE, BALL_SIZE);
 			
 			// net
-			g.setPaint(Color.black);
-			
-			
-			
+			g.setPaint(Color.black);			
 			g.fillRect(WIDTH/2 - NET_WIDTH/2, HEIGHT-NET_HEIGHT, NET_WIDTH, NET_HEIGHT);
+			g.fillOval(WIDTH/2 - NET_WIDTH/2, HEIGHT-(NET_HEIGHT+NET_WIDTH/2), NET_WIDTH, NET_WIDTH);
 			
 			// debug
 			g.setPaint(Color.cyan);

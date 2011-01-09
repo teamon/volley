@@ -75,14 +75,17 @@ public class Client implements MessageListener {
     			frame.disableChat();
     		}
     		break;
+ 
     		
     		case Command.NEW_SET:
     		{
     			this.set = Integer.parseInt(cmd.args[0]);
     
     			for(Player player : players.values()){
-    				frame.displayNick(player.getIndex(), player.getNick());
-    				frame.displayScore(player.getIndex(), player.getScore()[this.set]);
+    				int i = player.getIndex();
+    				frame.displayNick(i, player.getNick());
+    				frame.displayScore(i, player.getScore()[this.set]);
+    				frame.displayOldScore(i, player.getScore(), this.set);
     			}
     		}
     		break;
@@ -101,6 +104,7 @@ public class Client implements MessageListener {
     		{
     			frame.getGame().stop();
     			frame.enableChat();
+    			notReady();
     		}
     		break;
     		
@@ -108,6 +112,7 @@ public class Client implements MessageListener {
     		{
     			frame.getGame().stop();
     			this.players.remove(cmd.args[0]);
+    			notReady();
     		}
     		break;
     		
@@ -149,6 +154,11 @@ public class Client implements MessageListener {
     public void ready(){
     	player.setReady(true);
     	sendMessage(Command.playerReady());
+    }
+    
+    public void notReady(){
+    	player.setReady(false);
+    	frame.notReady();      
     }
 
     public static void main(String args[]) {

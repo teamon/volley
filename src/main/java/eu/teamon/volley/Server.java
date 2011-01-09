@@ -127,7 +127,8 @@ public class Server extends SmartThread implements MessageListener {
     		
     		case Command.DISCONNECT:
     		{
-    			// TODO: game.stop();
+    			// TODO: 
+    			game.stop();
     			Player player = this.connections.get(from);
     			sendToAll(Command.playerDisconnected(player));
     			try { 

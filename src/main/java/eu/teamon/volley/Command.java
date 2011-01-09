@@ -100,6 +100,10 @@ public class Command {
 		return new Command(START_GAME);
 	}
 	
+	public static Command stopGame(){
+		return new Command(STOP_GAME);
+	}
+	
 	public static Command disconnect(){
 		return new Command(DISCONNECT);
 	}

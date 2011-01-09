@@ -6,6 +6,7 @@ import java.awt.event.*;
 import java.io.IOException;
 
 import javax.swing.text.*;
+import java.awt.Font;
 
 /**
  *
@@ -25,6 +26,7 @@ public class ClientFrame extends JFrame {
     
     private JLabel[] scoreNickLabels = new JLabel[2];
     private JLabel[] scoreScoreLabels = new JLabel[2];
+    private JLabel[] oldScoreLabels = new JLabel[2];
     
     //Chat
     private JTextField chatMessageInput;
@@ -95,8 +97,7 @@ public class ClientFrame extends JFrame {
         readyButton.setEnabled(false);
         readyButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            	client.ready();
-            	readyButton.setEnabled(false);           	
+            	ready();    	
             }
         });
         readyButton.setBounds(186, 104, 117, 29);
@@ -109,11 +110,11 @@ public class ClientFrame extends JFrame {
         // Chat
         JPanel chatPanel = new JPanel();
         chatPanel.setBorder(new TitledBorder(null, "Chat", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-        chatPanel.setBounds(448, 231, 310, 205);
+        chatPanel.setBounds(448, 291, 310, 145);
         chatPanel.setLayout(null);
 
         chatMessageInput = new JTextField();
-        chatMessageInput.setBounds(6, 172, 298, 28);
+        chatMessageInput.setBounds(6, 112, 298, 28);
         chatMessageInput.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String msg = chatMessageInput.getText();
@@ -126,7 +127,7 @@ public class ClientFrame extends JFrame {
 
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setLocation(6, 19);
-        scrollPane.setSize(298, 153);
+        scrollPane.setSize(298, 94);
 
 
         chatPanel.add(chatMessageInput);
@@ -148,39 +149,74 @@ public class ClientFrame extends JFrame {
 		
 		JPanel scorePanel = new JPanel();
 		scorePanel.setBorder(new TitledBorder(null, "Score", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		scorePanel.setBounds(448, 148, 310, 84);
+		scorePanel.setBounds(448, 148, 310, 131);
 		pane.add(scorePanel);
 		scorePanel.setLayout(null);
 		
 		scoreNickLabels[0] = new JLabel("");
 		scoreNickLabels[0].setHorizontalAlignment(SwingConstants.RIGHT);
-		scoreNickLabels[0].setBounds(6, 27, 70, 34);
+		scoreNickLabels[0].setBounds(6, 87, 70, 34);
 		scorePanel.add(scoreNickLabels[0]);
 		
 		JLabel labelColon = new JLabel(":");
 		labelColon.setHorizontalAlignment(SwingConstants.CENTER);
-		labelColon.setBounds(152, 27, 11, 34);
+		labelColon.setBounds(152, 87, 11, 34);
 		scorePanel.add(labelColon);
 		
 		scoreScoreLabels[0] = new JLabel("");
 		scoreScoreLabels[0].setHorizontalAlignment(SwingConstants.RIGHT);
-		scoreScoreLabels[0].setBounds(81, 27, 70, 34);
+		scoreScoreLabels[0].setBounds(81, 87, 70, 34);
 		scorePanel.add(scoreScoreLabels[0]);
 		
 		scoreNickLabels[1] = new JLabel("");
 		scoreNickLabels[1].setHorizontalAlignment(SwingConstants.LEFT);
-		scoreNickLabels[1].setBounds(234, 27, 70, 34);
+		scoreNickLabels[1].setBounds(234, 87, 70, 34);
 		scorePanel.add(scoreNickLabels[1]);
 		
 		scoreScoreLabels[1] = new JLabel("");
 		scoreScoreLabels[1].setHorizontalAlignment(SwingConstants.LEFT);
-		scoreScoreLabels[1].setBounds(163, 27, 70, 34);
+		scoreScoreLabels[1].setBounds(163, 87, 70, 34);
 		scorePanel.add(scoreScoreLabels[1]);
+		
+		
+		oldScoreLabels[0] = new JLabel("");
+		oldScoreLabels[0].setFont(new Font("Lucida Grande", Font.PLAIN, 10));
+		oldScoreLabels[0].setHorizontalAlignment(SwingConstants.RIGHT);
+		oldScoreLabels[0].setBounds(81, 7, 70, 50);
+		scorePanel.add(oldScoreLabels[0]);
+		
+		oldScoreLabels[1] = new JLabel("");
+		oldScoreLabels[1].setFont(new Font("Lucida Grande", Font.PLAIN, 10));
+		oldScoreLabels[1].setHorizontalAlignment(SwingConstants.LEFT);
+		oldScoreLabels[1].setBounds(163, 7, 70, 50);
+		scorePanel.add(oldScoreLabels[1]);
+		
+		
+		scoreScoreLabels[1].setHorizontalAlignment(SwingConstants.LEFT);
+		
 
     }
     
     public void addChatMessage(Player player, String message){
     	chatTextArea.append(String.format("<%s> %s\n", player.getNick(), message));
+    }
+    
+    public void ready(){
+    	client.ready();
+    	readyButton.setEnabled(false);
+    }
+    
+    public void notReady(){
+    	readyButton.setEnabled(true);
+    }
+    
+    public void displayOldScore(int playerNo, int[] score, int len){
+    	StringBuilder sb = new StringBuilder("<html>");
+    	for(int i=0; i<len; i++){
+    		sb.append(score[i]).append("<br/>");
+    	}
+    	sb.append("</html>");
+    	oldScoreLabels[playerNo].setText(sb.toString());
     }
     
     public void displayScore(int playerNo, int score){

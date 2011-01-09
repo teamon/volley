@@ -11,16 +11,4 @@ public class Ball extends Physical{
 		setPosition(pos);
 		setVelocity(new Vec(0f, 0f));
 	}
-
-//
-//	public void move(){
-//		if(pos )
-//		
-//		vel.y -= Game.GRAVITY*Game.TIME;
-//		pos.y += vel.y*Game.TIME;
-//		
-//		
-//	}
-
-
 }

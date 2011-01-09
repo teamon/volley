@@ -7,11 +7,13 @@ public class Game {
     
     public static final float NET_WIDTH = 0.01f;
     public static final float NET_HEIGHT = 0.7f;
-    
-    
+   
     private static final int WAITING 	= 1;
     private static final int RUNNING	= 2;
     private static final int SCORED		= 3;
+    
+    private static final int SET_SCORE	= 3;
+    private static final int SET_NUM	= 5;
     
 	private Server server;
 	private SmartThread gameThread;
@@ -21,7 +23,7 @@ public class Game {
 	
 	public Game(Server server){
 		this.server = server;
-		this.ball = new Ball(new Vec(0f, 1f));
+		this.ball = new Ball();
 	}
 	
 	public Ball getBall(){
@@ -57,6 +59,10 @@ public class Game {
 	
 	public void stop(){
 		gameThread.kill();
+		server.sendToAll(Command.stopGame());
+		for(Player player : server.getPlayers()){
+			player.setReady(false);
+		}
 	}
 	
 	private Player findPlayerWithBall(){
@@ -82,9 +88,18 @@ public class Game {
 	}
 	
 	public void newSet(){
-		this.set++;
-		server.sendToAll(Command.newSet(this.set));
-		sendScore();		
+		if(this.set < SET_NUM-1){
+			this.set++;
+			
+			for(Player player : server.getPlayers()){
+				player.setHasBall((player.getSide() == -1 && this.set % 2 == 0)	|| (player.getSide() == 1 && this.set % 2 == 1));
+			}
+			
+			server.sendToAll(Command.newSet(this.set));
+			sendScore();		
+		} else {
+			stop();
+		}
 	}
 	
 	public void sendScore(){
@@ -162,6 +177,13 @@ public class Game {
 				ball.setVelocity(ball.getVelocity().negateX());
 			}
 			
+			// ball touching net top
+			if(pos.distanceTo(new Vec(0f, NET_HEIGHT)) <= (NET_WIDTH/2 + Ball.SIZE/2)){
+				float a = (-ball.getVelocity().getAngle()) + (float)(Math.PI);
+				ball.setVelocity(ball.getVelocity().withAngle(a));				
+			}
+			
+			
 			if(pos.y > Ball.SIZE/2){
 				Vec vel = ball.getVelocity();
 				
@@ -181,12 +203,14 @@ public class Game {
 				
 				Player player = findPlayerWithSide(pos.x > 0 ? -1 : 1);
 				player.score(set);
+				sendScore();
 				
+				if(player.getScore()[set] >= SET_SCORE){
+					newSet();
+				} else {
+					player.setHasBall(true);
+				}
 				
-				
-				player.setHasBall(true);
-				
-				sendScore();				
 				setupAfterScore();
 			}
 		}
