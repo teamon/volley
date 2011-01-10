@@ -2,8 +2,6 @@ package eu.teamon.volley.common;
 
 
 public class Ball extends Physical{
-    public static final float SIZE = 0.2f;
-
     public Ball(){
 		this(new Vec(0f,0f));
 	}

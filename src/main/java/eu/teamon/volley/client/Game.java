@@ -16,15 +16,16 @@ import eu.teamon.volley.common.SmartThread;
 import eu.teamon.volley.common.Vec;
 
 public class Game extends JPanel {
-	private final int SCALE = 430;
-	private final int WIDTH = 430;
-	private final int HEIGHT = 430;
+	private final int SIZE = 430;
+	private final float SCALE = SIZE/100.0f;
+	private final int WIDTH = SIZE;
+	private final int HEIGHT = SIZE;
 
-	private final int PLAYER_WIDTH = (int)(SCALE * Config.PLAYER_WIDTH/2);
-	private final int PLAYER_HEIGHT = (int)(SCALE * Config.PLAYER_HEIGHT/2);
-	private final int BALL_SIZE = (int)(SCALE * Config.BALL_SIZE/2);
-	private final int NET_WIDTH = (int)(SCALE * Config.NET_WIDTH/2);
-	private final int NET_HEIGHT = (int)(SCALE * Config.NET_HEIGHT/2);
+	private final int PLAYER_WIDTH = (int)(SCALE * Config.PLAYER_WIDTH);
+	private final int PLAYER_HEIGHT = (int)(SCALE * Config.PLAYER_HEIGHT);
+	private final int BALL_RADIUS = (int)(SCALE * Config.BALL_RADIUS);
+	private final int NET_WIDTH = (int)(SCALE * Config.NET_WIDTH);
+	private final int NET_HEIGHT = (int)(SCALE * Config.NET_HEIGHT);
 	
 	private Client client;
 	private Ball ball;
@@ -145,16 +146,8 @@ public class Game extends JPanel {
     	repaint();
     }
     
-    protected int X(float x){
-    	return (int)((x+1f)/2 * SCALE); // (-1.0 ; 1.0) -> (0.0 ; 1.0)
-    }
-    
-    protected int Y(float y){
-    	return (int)((1f - (y/2)) * SCALE); // (2.0 ; 0.0) -> (0.0 ; 1.0)
-    }
-    
     protected Vec coords(Vec vec){
-    	return new Vec(X(vec.x), Y(vec.y));
+    	return new Vec(vec.x*SCALE, vec.y*SCALE);
     }
     
     protected Color playerColor(Player player){
@@ -177,21 +170,21 @@ public class Game extends JPanel {
 
 				
 				g.setPaint(playerColor(player));
-				g.fillOval((int)pos.x-(PLAYER_WIDTH/2), (int)pos.y-(PLAYER_HEIGHT+PLAYER_WIDTH/2), PLAYER_WIDTH, PLAYER_WIDTH);
-				g.fillRect((int)pos.x-(PLAYER_WIDTH/2), (int)pos.y-PLAYER_HEIGHT, PLAYER_WIDTH, PLAYER_HEIGHT);
+				g.fillOval((int)pos.x-(PLAYER_WIDTH/2), (int)pos.y-(PLAYER_HEIGHT/2+PLAYER_WIDTH/2), PLAYER_WIDTH, PLAYER_WIDTH);
+				g.fillRect((int)pos.x-(PLAYER_WIDTH/2), (int)pos.y-PLAYER_HEIGHT/2, PLAYER_WIDTH, PLAYER_HEIGHT);
 				
 				
 				// debug
 				g.setPaint(Color.cyan);
 				g.fillOval((int)pos.x-5, (int)pos.y-5, 10, 10);
-				g.fillOval((int)pos.x-5, (int)(pos.y - PLAYER_HEIGHT)-5, 10, 10);
+				g.fillOval((int)pos.x-5, (int)(pos.y - PLAYER_HEIGHT/2)-5, 10, 10);
 				// eod
 			}
 			
 			// ball
 			g.setPaint(Color.black);
 			Vec ballPos = coords(ball.getPosition());
-			g.fillOval((int)ballPos.x-(BALL_SIZE/2), (int)ballPos.y-(BALL_SIZE/2), BALL_SIZE, BALL_SIZE);
+			g.fillOval((int)ballPos.x-(BALL_RADIUS), (int)ballPos.y-BALL_RADIUS, 2*BALL_RADIUS, 2*BALL_RADIUS);
 			
 			// net
 			g.setPaint(Color.black);			

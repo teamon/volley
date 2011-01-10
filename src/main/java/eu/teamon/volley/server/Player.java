@@ -71,7 +71,7 @@ public class Player  extends BasePlayer {
 	
 	
 	public void setStartPosition(){
-		setPosition(new Vec(side * 0.75f, 0f));
+		setPosition(new Vec(side * 25 + 50, 100));
 	}
 
 }

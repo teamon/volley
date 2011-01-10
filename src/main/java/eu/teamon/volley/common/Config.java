@@ -5,21 +5,19 @@ public class Config {
     public static final int 	DEFAULT_PORT 	= 7777;
 
     // player
-    public static final float PLAYER_WIDTH 	= 0.3f;
-    public static final float PLAYER_HEIGHT = 0.3f;
-	public static final float PLAYER_X_SPEED 		= 0.01f;
-    public static final float PLAYER_JUMP_SPEED 	= 0.07f;
+    public static final float PLAYER_WIDTH 	= 15f;
+    public static final float PLAYER_HEIGHT = 15f;
+	public static final float PLAYER_X_SPEED 		= 0.5f;
+    public static final float PLAYER_JUMP_SPEED 	= 5.0f;
     
     // ball
-    public static final float BALL_SIZE 	= 0.2f;    
+    public static final float BALL_RADIUS 	= 5f;    
     
     // net
-    public static final float NET_WIDTH 	= 0.01f;
-    public static final float NET_HEIGHT 	= 0.7f;
+    public static final float NET_WIDTH 	= 0.5f;
+    public static final float NET_HEIGHT 	= 35f;
     
-    // world
-    public static final float X_MAX		= 1.0f;
-    public static final float Y_MAX		= 2.0f;
+    // world;
 	public static final float TIME 		= 0.15f;
     public static final float GRAVITY 	= 0.003f;
     

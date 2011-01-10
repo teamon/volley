@@ -4,7 +4,6 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.event.*;
 import java.io.IOException;
-import java.util.Arrays;
 
 import javax.swing.text.*;
 
