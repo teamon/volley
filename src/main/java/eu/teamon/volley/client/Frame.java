@@ -80,6 +80,7 @@ public class Frame extends JFrame {
 
         hostTextField = new JTextField();
 		hostTextField.setBounds(90, 16, 213, 28);
+		hostTextField.setText(Config.DEFAULT_HOST);
         settingsPanel.add(hostTextField);
 
         // nick
