@@ -1,19 +1,27 @@
-package eu.teamon.volley;
+package eu.teamon.volley.client;
 
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.event.*;
 import java.io.IOException;
+import java.util.Arrays;
 
 import javax.swing.text.*;
+
+import eu.teamon.volley.common.Command;
+import eu.teamon.volley.common.Config;
+import eu.teamon.volley.common.Logger;
+import eu.teamon.volley.common.Utils;
+
 import java.awt.Font;
 
 /**
  *
  * @author teamon
  */
-public class ClientFrame extends JFrame {
+public class Frame extends JFrame {
 	private class EmptyNickException extends Exception {}
+	
 	// Settings
     private JButton connectButton;
     private JButton readyButton;
@@ -33,9 +41,11 @@ public class ClientFrame extends JFrame {
     private JTextArea chatTextArea;
 
     private Client client;
-    private ClientGame game;
+    private Game game;
     
-    public ClientFrame() {
+    public Frame(Client client) {
+    	this.client = client;
+    	
         setTitle("Volley Client");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setBounds(100, 100, 764, 463);
@@ -59,7 +69,7 @@ public class ClientFrame extends JFrame {
 
         portTextField = new JTextField();
 		portTextField.setBounds(90, 44, 213, 28);
-        portTextField.setText(Integer.toString(Server.DEFAULT_PORT));
+        portTextField.setText(Integer.toString(Config.DEFAULT_PORT));
         settingsPanel.add(portTextField);
 
         // host
@@ -86,7 +96,7 @@ public class ClientFrame extends JFrame {
         connectButton = new JButton("Connect");
         connectButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-	            if(client.isConnected()) disconnect();
+	            if(Frame.this.client.isConnected()) disconnect();
 	            else connect();
             }
         });
@@ -119,7 +129,7 @@ public class ClientFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String msg = chatMessageInput.getText();
                 if(!msg.equals("")) {
-                    client.sendMessage(Command.chatMessage(chatMessageInput.getText()));
+                    Frame.this.client.sendMessage(Command.chatMessage(chatMessageInput.getText()));
                     chatMessageInput.setText("");
                 }
             }
@@ -140,9 +150,9 @@ public class ClientFrame extends JFrame {
         ((DefaultCaret)chatTextArea.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 		pane.add(chatPanel);
 		
-		client = new Client(this);
 		
-		game = new ClientGame(client);
+		game = new Game(client);
+		client.setGame(game);
 		game.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		game.setBounds(6, 6, 430, 430);
 		pane.add(game);
@@ -194,47 +204,35 @@ public class ClientFrame extends JFrame {
 		
 		scoreScoreLabels[1].setHorizontalAlignment(SwingConstants.LEFT);
 		
-
+		setVisible(true);
     }
     
     public void addChatMessage(Player player, String message){
     	chatTextArea.append(String.format("<%s> %s\n", player.getNick(), message));
     }
     
-    public void ready(){
+    protected void ready(){
     	client.ready();
     	readyButton.setEnabled(false);
     }
     
-    public void notReady(){
+    protected void notReady(){
     	readyButton.setEnabled(true);
     }
     
-    public void displayOldScore(int playerNo, int[] score, int len){
-    	StringBuilder sb = new StringBuilder("<html>");
-    	for(int i=0; i<len; i++){
-    		sb.append(score[i]).append("<br/>");
-    	}
-    	sb.append("</html>");
-    	oldScoreLabels[playerNo].setText(sb.toString());
-    }
     
-    public void displayScore(int playerNo, int score){
-    	scoreScoreLabels[playerNo].setText(Integer.toString(score));
+    public void displayScore(){
+    	int set = game.getSet();
+    	
+		for(Player player : game.getPlayers().values()){
+			int i = player.getIndex();
+			scoreNickLabels[i].setText(player.getNick());
+			scoreScoreLabels[i].setText(Integer.toString(player.getScore()[set]));
+			oldScoreLabels[i].setText(Utils.join(player.getScore(), "<html>", "<br/>", "</html>"));
+		}
     }
-    
-    public void displayNick(int playerNo, String nick){
-    	scoreNickLabels[playerNo].setText(nick);
-    }
-    
-    public Client getClient(){
-        return this.client;
-    }
-    
-    public ClientGame getGame(){
-    	return this.game;
-    }
-    
+       
+
     protected void connect(){
         Logger.debug("Connecting...");
         try {
@@ -258,8 +256,6 @@ public class ClientFrame extends JFrame {
             
             // enable ready button
             readyButton.setEnabled(true);
-        
-//    		game.start(); // TEMPORARY!!
         } catch (EmptyNickException e){
         	showError("Nick can't be empty");
         } catch (IOException e){

@@ -1,49 +1,61 @@
-package eu.teamon.volley;
+package eu.teamon.volley.client;
 
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JPanel;
 
-public class ClientGame extends JPanel {
+import eu.teamon.volley.common.Ball;
+import eu.teamon.volley.common.Command;
+import eu.teamon.volley.common.Config;
+import eu.teamon.volley.common.Logger;
+import eu.teamon.volley.common.SmartThread;
+import eu.teamon.volley.common.Vec;
+
+public class Game extends JPanel {
 	private final int SCALE = 430;
 	private final int WIDTH = 430;
 	private final int HEIGHT = 430;
 
-	private final int PLAYER_WIDTH = (int)(SCALE * Player.WIDTH/2);
-	private final int PLAYER_HEIGHT = (int)(SCALE * Player.HEIGHT/2);
-	private final int BALL_SIZE = (int)(SCALE * Ball.SIZE/2);
-	private final int NET_WIDTH = (int)(SCALE * Game.NET_WIDTH/2);
-	private final int NET_HEIGHT = (int)(SCALE * Game.NET_HEIGHT/2);
+	private final int PLAYER_WIDTH = (int)(SCALE * Config.PLAYER_WIDTH/2);
+	private final int PLAYER_HEIGHT = (int)(SCALE * Config.PLAYER_HEIGHT/2);
+	private final int BALL_SIZE = (int)(SCALE * Config.BALL_SIZE/2);
+	private final int NET_WIDTH = (int)(SCALE * Config.NET_WIDTH/2);
+	private final int NET_HEIGHT = (int)(SCALE * Config.NET_HEIGHT/2);
 	
 	private Client client;
 	private Ball ball;
+	private int set = 0;
+	private Map<String, Player> players;
 
 	private SmartThread gameThread;
 	
-    public ClientGame(Client client){
+    public Game(Client client){
     	this.client = client;
     	this.ball = new Ball();
+    	this.players = new HashMap<String, Player>();
     	
 		setSize(WIDTH, HEIGHT);
 		this.addKeyListener(new KeyAdapter(){
 			public void keyPressed(KeyEvent e) {
 				switch(e.getKeyCode()){
 					case KeyEvent.VK_LEFT:
-						ClientGame.this.client.sendMessage(Command.movingLeft(true));
+						Game.this.client.sendMessage(Command.movingLeft(true));
 						break;
 						
 					case KeyEvent.VK_RIGHT:
-						ClientGame.this.client.sendMessage(Command.movingRight(true));
+						Game.this.client.sendMessage(Command.movingRight(true));
 						break;
 						
 					case KeyEvent.VK_UP:
-						ClientGame.this.client.sendMessage(Command.jumping(true));
+						Game.this.client.sendMessage(Command.jumping(true));
 						break;
 						
 					case KeyEvent.VK_SPACE:
-						ClientGame.this.client.sendMessage(Command.serve());
+						Game.this.client.sendMessage(Command.serve());
 						break;
 						
 					default:
@@ -54,15 +66,15 @@ public class ClientGame extends JPanel {
 			public void keyReleased(KeyEvent e) {
 				switch(e.getKeyCode()){
 					case KeyEvent.VK_LEFT:
-						ClientGame.this.client.sendMessage(Command.movingLeft(false));
+						Game.this.client.sendMessage(Command.movingLeft(false));
 						break;
 						
 					case KeyEvent.VK_RIGHT:
-						ClientGame.this.client.sendMessage(Command.movingRight(false));
+						Game.this.client.sendMessage(Command.movingRight(false));
 						break;
 						
 					case KeyEvent.VK_UP:
-						ClientGame.this.client.sendMessage(Command.jumping(false));
+						Game.this.client.sendMessage(Command.jumping(false));
 						break;
 						
 					case KeyEvent.VK_SPACE:
@@ -77,7 +89,7 @@ public class ClientGame extends JPanel {
 			public void keyTyped(KeyEvent e) {
 				switch(e.getKeyChar()){
 					case ' ': // space
-						ClientGame.this.client.sendMessage(Command.serve());
+						Game.this.client.sendMessage(Command.serve());
 						break;
 					
 					default:
@@ -86,6 +98,23 @@ public class ClientGame extends JPanel {
 			}
 		});
 	}
+    
+    
+    public void setBallPosition(Vec pos){
+    	this.ball.setPosition(pos);
+    }
+    
+    public void setSet(int set){
+    	this.set = set;
+    }
+    
+    public int getSet(){
+    	return this.set;
+    }
+    
+    public void setScore(Player player, int score){
+		player.setScore(this.set, score);
+    }
     
     public void start(){
        	gameThread = new SmartThread(){
@@ -102,8 +131,10 @@ public class ClientGame extends JPanel {
     	requestFocus();
     }
     
-    public void setBallPosition(Vec pos){
-    	this.ball.setPosition(pos);
+
+    
+    public Map<String, Player> getPlayers(){
+    	return this.players;
     }
     
     public void stop(){
@@ -141,7 +172,7 @@ public class ClientGame extends JPanel {
   		
   		if(gameThread != null && gameThread.isAlive()){			
 			// players
-			for(Player player : client.getPlayers()){
+			for(Player player : players.values()){
 				Vec pos = coords(player.getPosition());
 
 				

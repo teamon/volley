@@ -1,4 +1,5 @@
-package eu.teamon.volley;
+package eu.teamon.volley.common;
+
 
 public class Ball extends Physical{
     public static final float SIZE = 0.2f;

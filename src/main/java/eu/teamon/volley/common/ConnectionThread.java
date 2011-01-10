@@ -1,7 +1,8 @@
-package eu.teamon.volley;
+package eu.teamon.volley.common;
 
 import java.io.*;
 import java.net.*;
+
 
 /**
  * Low level class for handling socket connections

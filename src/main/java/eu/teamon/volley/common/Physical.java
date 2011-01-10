@@ -1,4 +1,5 @@
-package eu.teamon.volley;
+package eu.teamon.volley.common;
+
 
 public class Physical {
 	protected Vec pos = new Vec(0f, 0f);

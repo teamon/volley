@@ -1,4 +1,4 @@
-package eu.teamon.volley;
+package eu.teamon.volley.common;
 
 public class Command {
 	public int id;
@@ -47,15 +47,15 @@ public class Command {
 	public static final int NEW_SET				= 16;
 	public static final int PLAYER_SIDE			= 17;
 	
-	public static Command newPlayerRegistered(Player player){
+	public static Command newPlayerRegistered(BasePlayer player){
 		return new Command(PLAYER_REGISTERED, player.getNick());
 	}
 	
-	public static Command playerSide(Player player){
+	public static Command playerSide(BasePlayer player){
 		return new Command(PLAYER_SIDE, player.getNick(), Integer.toString(player.getSide()));
 	}
 	
-	public static Command chatMessage(Player player, String message){
+	public static Command chatMessage(BasePlayer player, String message){
 		return new Command(SERVER_CHAT_MESSAGE, player.getNick(), message);
 	}
 	
@@ -75,7 +75,7 @@ public class Command {
 		return new Command(JUMPING, jumping ? "1" : "0");
 	}
 	
-	public static Command playerPosition(Player player){
+	public static Command playerPosition(BasePlayer player){
 		Vec pos = player.getPosition();
 		return new Command(PLAYER_POSITION, player.getNick(), Float.toString(pos.x), Float.toString(pos.y));
 	}
@@ -85,7 +85,7 @@ public class Command {
 		return new Command(BALL_POSITION, Float.toString(pos.x), Float.toString(pos.y));
 	}
 	
-	public static Command score(Player player, int score){
+	public static Command score(BasePlayer player, int score){
 		return new Command(SCORE, player.getNick(), Integer.toString(score));
 	}
 	
@@ -113,7 +113,7 @@ public class Command {
 		return new Command(DISCONNECT);
 	}
 	
-	public static Command playerDisconnected(Player player){
+	public static Command playerDisconnected(BasePlayer player){
 		return new Command(PLAYER_DISCONNECTED, player.getNick());
 	}
 

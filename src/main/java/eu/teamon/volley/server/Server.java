@@ -1,21 +1,29 @@
-package eu.teamon.volley;
+package eu.teamon.volley.server;
 
-import java.util.*;
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
+import eu.teamon.volley.common.Command;
+import eu.teamon.volley.common.Config;
+import eu.teamon.volley.common.ConnectionThread;
+import eu.teamon.volley.common.Logger;
+import eu.teamon.volley.common.MessageListener;
+import eu.teamon.volley.common.SmartThread;
 
 public class Server extends SmartThread implements MessageListener {
-    public static final int DEFAULT_PORT = 7777;
     public static final int CONNECTIONS_LIMIT = 2;
-    
-    //private int port;
+
     private ServerSocket socket = null;
     private Map<ConnectionThread, Player> connections;
     private Game game;
     
     public Server() throws IOException {
-        this(DEFAULT_PORT);
+        this(Config.DEFAULT_PORT);
     }
     
     public Server(int port) throws IOException {
@@ -24,47 +32,6 @@ public class Server extends SmartThread implements MessageListener {
         this.game = new Game(this);
         // this.game.start();
         start();
-    }
-    
-    public void run(){
-        try {
-            socket.setSoTimeout(1000);
-        } catch (SocketException e){
-            Logger.error(e.getMessage());
-        }
-        
-        while(keep){
-            try {
-            	if(this.connections.size() < CONNECTIONS_LIMIT){
-                    ConnectionThread ct = new ConnectionThread(this, socket.accept());
-                    this.connections.put(ct, new Player());
-                    ct.start();	                    
-            	} else {
-            		try {
-            			Thread.sleep(500);
-            		} catch (InterruptedException e){
-            			// do nothing
-            		}
-            	}
-		
-            } catch (SocketTimeoutException e){
-                // do nothing
-                Logger.debug("Socket Timeout");
-            } catch (IOException e){
-                Logger.error(e.getMessage());
-            }
-        }
-        
-        try {
-            // close all connections
-            for(ConnectionThread ct : connections.keySet()) {
-                ct.kill();
-            }
-            
-            socket.close();
-        } catch (IOException e){
-            Logger.error(e.getMessage());
-        }
     }
     
     public void processMessage(ConnectionThread from, String message){
@@ -146,6 +113,47 @@ public class Server extends SmartThread implements MessageListener {
     	}
     }
     
+    public void run(){
+        try {
+            socket.setSoTimeout(1000);
+        } catch (SocketException e){
+            Logger.error(e.getMessage());
+        }
+        
+        while(keep){
+            try {
+            	if(this.connections.size() < CONNECTIONS_LIMIT){
+                    ConnectionThread ct = new ConnectionThread(this, socket.accept());
+                    this.connections.put(ct, new Player()); // just an empty player for now
+                    ct.start();	                    
+            	} else {
+            		try {
+            			Thread.sleep(500);
+            		} catch (InterruptedException e){
+            			// do nothing
+            		}
+            	}
+		
+            } catch (SocketTimeoutException e){
+                // do nothing
+                Logger.debug("Socket Timeout");
+            } catch (IOException e){
+                Logger.error(e.getMessage());
+            }
+        }
+        
+        try {
+            // close all connections
+            for(ConnectionThread ct : connections.keySet()) {
+                ct.kill();
+            }
+            
+            socket.close();
+        } catch (IOException e){
+            Logger.error(e.getMessage());
+        }
+    }
+    
     public void remove(ConnectionThread connection){
         this.connections.remove(connection);
     }
@@ -156,6 +164,12 @@ public class Server extends SmartThread implements MessageListener {
             ct.sendMessage(message);
         }
     }
+    
+	public void sendScore(){
+		for(Player player : getPlayers()){
+			sendToAll(Command.score(player, player.getScore()[game.getSet()]));
+		}
+	}
     
     public Collection<Player> getPlayers(){
     	return connections.values();
@@ -182,9 +196,8 @@ public class Server extends SmartThread implements MessageListener {
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ServerFrame().setVisible(true);
+                new Frame().setVisible(true);
             }
         });
     }
-    
 }

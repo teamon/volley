@@ -1,6 +1,10 @@
-package eu.teamon.volley;
+package eu.teamon.volley.server;
 
 import javax.swing.*;
+
+import eu.teamon.volley.common.Config;
+import eu.teamon.volley.common.Logger;
+
 import java.awt.event.*;
 import java.awt.*;
 import java.io.IOException;
@@ -10,7 +14,7 @@ import java.io.IOException;
  *
  * @author teamon
  */
-public class ServerFrame extends JFrame {
+public class Frame extends JFrame {
     private JButton startStopButton;
     private JLabel portLabel;
     private JTextField portTextField;
@@ -18,7 +22,7 @@ public class ServerFrame extends JFrame {
     
     private Server server;
 
-    public ServerFrame() {
+    public Frame() {
         setTitle("Volley Server");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         
@@ -35,7 +39,7 @@ public class ServerFrame extends JFrame {
         settingsPane.add(portLabel);
         
         portTextField = new JTextField();
-        portTextField.setText(Integer.toString(Server.DEFAULT_PORT));
+        portTextField.setText(Integer.toString(Config.DEFAULT_PORT));
         portTextField.setAlignmentX(Component.CENTER_ALIGNMENT);
         settingsPane.add(portTextField);
 
