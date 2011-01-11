@@ -3,8 +3,8 @@ package eu.teamon.volley.client;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.event.*;
+import java.awt.Font;
 import java.io.IOException;
-
 import javax.swing.text.*;
 
 import eu.teamon.volley.common.Command;
@@ -12,7 +12,6 @@ import eu.teamon.volley.common.Config;
 import eu.teamon.volley.common.Logger;
 import eu.teamon.volley.common.Utils;
 
-import java.awt.Font;
 
 /**
  *
@@ -192,15 +191,14 @@ public class Frame extends JFrame {
 		oldScoreLabels[0] = new JLabel("");
 		oldScoreLabels[0].setFont(new Font("Lucida Grande", Font.PLAIN, 10));
 		oldScoreLabels[0].setHorizontalAlignment(SwingConstants.RIGHT);
-		oldScoreLabels[0].setBounds(81, 7, 70, 50);
+		oldScoreLabels[0].setBounds(81, 17, 70, 60);
 		scorePanel.add(oldScoreLabels[0]);
 		
 		oldScoreLabels[1] = new JLabel("");
 		oldScoreLabels[1].setFont(new Font("Lucida Grande", Font.PLAIN, 10));
 		oldScoreLabels[1].setHorizontalAlignment(SwingConstants.LEFT);
-		oldScoreLabels[1].setBounds(163, 7, 70, 50);
+		oldScoreLabels[1].setBounds(163, 17, 70, 60);
 		scorePanel.add(oldScoreLabels[1]);
-		
 		
 		scoreScoreLabels[1].setHorizontalAlignment(SwingConstants.LEFT);
 		
@@ -228,7 +226,7 @@ public class Frame extends JFrame {
 			int i = player.getIndex();
 			scoreNickLabels[i].setText(player.getNick());
 			scoreScoreLabels[i].setText(Integer.toString(player.getScore()[set]));
-			oldScoreLabels[i].setText(Utils.join(player.getScore(), "<html>", "<br/>", "</html>"));
+			oldScoreLabels[i].setText(Utils.join(player.getScore(game.getSet()), "<html>", "<br/>", "</html>"));
 		}
     }
        
@@ -266,7 +264,7 @@ public class Frame extends JFrame {
     
     protected void disconnect(){
         client.disconnect();
-//        game.stop();
+        game.stop();
         
         // enable settings
         portTextField.setEnabled(true);

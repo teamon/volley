@@ -1,6 +1,6 @@
 package eu.teamon.volley.common;
 
-public abstract class BasePlayer  extends Physical {
+public abstract class BasePlayer extends Physical {
 	protected String nick;
 	protected int[] score;
 	protected int index = 0;
@@ -49,6 +49,15 @@ public abstract class BasePlayer  extends Physical {
     
     public int[] getScore(){
     	return this.score;
+    }
+    
+    public int[] getScore(int set){
+    	int[] res = new int[set];
+    	
+    	for(int i=0; i<set; i++){
+    		res[i] = this.score[i];
+    	}
+    	return res;
     }
     
     public void resetScore(){

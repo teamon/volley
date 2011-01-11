@@ -2,6 +2,7 @@ package eu.teamon.volley.client;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Map;
 
 import eu.teamon.volley.common.Command;
 import eu.teamon.volley.common.ConnectionThread;
@@ -53,12 +54,10 @@ public class Client implements MessageListener {
     }
     
     public void ready(){
-    	//player.setReady(true);
     	sendMessage(Command.playerReady());
     }
     
     public void notReady(){
-    	//player.setReady(false);
     	frame.notReady();      
     }
     
@@ -97,14 +96,18 @@ public class Client implements MessageListener {
     		
     		case Command.PLAYER_REGISTERED:
     		{
+    			Map<String, Player> players = game.getPlayers();
     			String nick = cmd.args[0];
-        		if(!game.getPlayers().containsKey(nick)){
-        			Player player = new Player(nick);
-        			player.setIndex(game.getPlayers().size());
-        			game.getPlayers().put(nick, player);
+        		if(!players.containsKey(nick)){
+        			Player p;        			
+        			if(this.player.getNick().equals(nick)){
+        				p = this.player;
+        			} else {
+        				p = new Player(nick);
+        			}
+        			p.setIndex(players.size());
+        			players.put(nick, p);
         		}
-        		
-        		// TODO: Introduce variable players
     		}
     		break;
     		

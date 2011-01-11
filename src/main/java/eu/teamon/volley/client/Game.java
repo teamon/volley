@@ -21,11 +21,11 @@ public class Game extends JPanel {
 	private final int WIDTH = SIZE;
 	private final int HEIGHT = SIZE;
 
-	private final int PLAYER_WIDTH = (int)(SCALE * Config.PLAYER_WIDTH);
+	private final int PLAYER_WIDTH 	= (int)(SCALE * Config.PLAYER_WIDTH);
 	private final int PLAYER_HEIGHT = (int)(SCALE * Config.PLAYER_HEIGHT);
-	private final int BALL_RADIUS = (int)(SCALE * Config.BALL_RADIUS);
-	private final int NET_WIDTH = (int)(SCALE * Config.NET_WIDTH);
-	private final int NET_HEIGHT = (int)(SCALE * Config.NET_HEIGHT);
+	private final int BALL_RADIUS 	= (int)(SCALE * Config.BALL_RADIUS);
+	private final int NET_WIDTH 	= (int)(SCALE * Config.NET_WIDTH);
+	private final int NET_HEIGHT 	= (int)(SCALE * Config.NET_HEIGHT);
 	
 	private Client client;
 	private Ball ball;
@@ -118,6 +118,10 @@ public class Game extends JPanel {
     }
     
     public void start(){
+    	for(Player player : players.values()){
+    		player.resetScore();
+    	}
+    	
        	gameThread = new SmartThread(){
     		public void run(){
     			while(keep) {
@@ -151,15 +155,14 @@ public class Game extends JPanel {
     }
     
     protected Color playerColor(Player player){
-    	switch(player.getSide()){
-    		case 1: return Color.red;
-    		case -1: return Color.blue;
-    		default: return Color.black;
-    	}
+    	if(player == client.getPlayer()) return Color.red;
+    	else return Color.blue;
     }
 
   	public void paintComponent(Graphics gfx){
   		Graphics2D g = (Graphics2D)gfx;
+  		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+  		
   		g.setColor(Color.WHITE);
   		g.clearRect(0, 0, WIDTH, HEIGHT);
   		
@@ -168,17 +171,14 @@ public class Game extends JPanel {
 			for(Player player : players.values()){
 				Vec pos = coords(player.getPosition());
 
-				
 				g.setPaint(playerColor(player));
-				g.fillOval((int)pos.x-(PLAYER_WIDTH/2), (int)pos.y-(PLAYER_HEIGHT/2+PLAYER_WIDTH/2), PLAYER_WIDTH, PLAYER_WIDTH);
-				g.fillRect((int)pos.x-(PLAYER_WIDTH/2), (int)pos.y-PLAYER_HEIGHT/2, PLAYER_WIDTH, PLAYER_HEIGHT);
-				
+				g.fillOval((int)pos.x-(PLAYER_WIDTH/2), (int)pos.y-(PLAYER_HEIGHT+PLAYER_WIDTH/2), PLAYER_WIDTH, PLAYER_WIDTH);
+				g.fillRect((int)pos.x-(PLAYER_WIDTH/2), (int)pos.y-PLAYER_HEIGHT, PLAYER_WIDTH, PLAYER_HEIGHT);
 				
 				// debug
-				g.setPaint(Color.cyan);
-				g.fillOval((int)pos.x-5, (int)pos.y-5, 10, 10);
-				g.fillOval((int)pos.x-5, (int)(pos.y - PLAYER_HEIGHT/2)-5, 10, 10);
-				// eod
+				// g.setPaint(Color.cyan);
+				// g.fillOval((int)pos.x-5, (int)pos.y-5, 10, 10);
+				// g.fillOval((int)pos.x-5, (int)(pos.y - PLAYER_HEIGHT)-5, 10, 10);
 			}
 			
 			// ball
@@ -192,9 +192,8 @@ public class Game extends JPanel {
 			g.fillOval(WIDTH/2 - NET_WIDTH/2, HEIGHT-(NET_HEIGHT+NET_WIDTH/2), NET_WIDTH, NET_WIDTH);
 			
 			// debug
-			g.setPaint(Color.cyan);
-			g.fillOval((int)ballPos.x-5, (int)ballPos.y-5, 10, 10);
-			// eod
+			// g.setPaint(Color.cyan);
+			// g.fillOval((int)ballPos.x-5, (int)ballPos.y-5, 10, 10);
   		}
 		
 	}

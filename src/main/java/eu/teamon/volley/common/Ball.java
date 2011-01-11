@@ -10,4 +10,12 @@ public class Ball extends Physical{
 		setPosition(pos);
 		setVelocity(new Vec(0f, 0f));
 	}
+	
+	@Override
+	public void setVelocity(Vec vel){
+		// abs(x) <= MAX		
+		super.setVelocity(new Vec(Math.signum(vel.x)*Math.min(Math.abs(vel.x), Config.BALL_MAX_SPEED), Math.signum(vel.y)*Math.min(Math.abs(vel.y), Config.BALL_MAX_SPEED)));
+	}
+	
+	
 }

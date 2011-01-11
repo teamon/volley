@@ -4,7 +4,7 @@ import eu.teamon.volley.common.BasePlayer;
 import eu.teamon.volley.common.Config;
 import eu.teamon.volley.common.Vec;
 
-public class Player  extends BasePlayer {
+public class Player extends BasePlayer {
 	private boolean movingLeft = false;
 	private boolean movingRight = false;    
 	private boolean jumping = false;
@@ -59,8 +59,8 @@ public class Player  extends BasePlayer {
 	
 	
 	public void setJumping(boolean jumping) { 
-		if(!this.jumping && jumping && pos.y == 0){
-			vel.y = Config.PLAYER_JUMP_SPEED;
+		if(!this.jumping && jumping && pos.y >= 100){
+			vel.y = -Config.PLAYER_JUMP_SPEED/Config.TIME;
 		}
 		this.jumping = jumping; 
 	}

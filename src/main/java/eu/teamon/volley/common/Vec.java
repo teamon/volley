@@ -42,17 +42,34 @@ public class Vec {
 		return new Vec(this.x, -this.y);
 	}
 	
+	public Vec scale(float factor){
+		return new Vec(x*factor, y*factor);
+	}
+	
 	public float getLength(){
 		return (float)Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2));
 	}
 	
 	public float getAngle(){
-		return (float)Math.asin(this.y/getLength());
+		if(y >= 0){
+			return (float)Math.acos(this.x/getLength());
+		} else {
+			return 2*(float)Math.PI - (float)Math.acos(this.x/getLength());
+		}
 	}
 	
 	public Vec withAngle(float angle){
 		return Vec.withAngleAndLength(angle, getLength());
 	}
+	
+	public float angleTo(Vec that){
+		return getAngle() - that.getAngle();
+	}
+	
+	public float absoluteAngleTo(Vec that){
+		float x = Math.abs(angleTo(that));
+		if(x > Math.PI) x = 2*(float)Math.PI - x;
+		return x;	}
 	
 	public String toString(){
 		return "(" + this.x + "," + this.y + ")";

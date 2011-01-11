@@ -22,8 +22,6 @@ public class Utils {
 	private static String formatJoin(String res, String begin, String separator, String end){
 		return res.replaceAll(", ", separator).replace("[", begin).replace("]", end);
 	}
-	
-	
 
 	public static Object[] prepend(Object item, Object[] arr) {
 		Object[] result = new Object[arr.length+1];

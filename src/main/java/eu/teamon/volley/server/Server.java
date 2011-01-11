@@ -16,7 +16,7 @@ import eu.teamon.volley.common.MessageListener;
 import eu.teamon.volley.common.SmartThread;
 
 public class Server extends SmartThread implements MessageListener {
-    public static final int CONNECTIONS_LIMIT = 2;
+    public static final int CONNECTIONS_LIMIT = 2; // 2 TEMP!!!
 
     private ServerSocket socket = null;
     private Map<ConnectionThread, Player> connections;

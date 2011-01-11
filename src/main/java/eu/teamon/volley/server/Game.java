@@ -12,7 +12,6 @@ import static eu.teamon.volley.common.Config.*;
 public class Game {
     private static final int WAITING 	= 1;
     private static final int RUNNING	= 2;
-    private static final int SCORED		= 3;
     
 	private Server server;
 	private SmartThread gameThread;
@@ -40,7 +39,7 @@ public class Game {
         int i = 0;
         for(Player player : server.getPlayers()){
         	player.setSide(i*2 - 1);
-        	server.sendToAll(Command.playerSide(player));
+        	server.sendToAll(Command.playerSide(player)); // just for color
         	i++;
         }
 		
@@ -57,7 +56,7 @@ public class Game {
 				
 				while(keep) {
 					process();
-					try { Thread.sleep(5); } catch (InterruptedException e){ }
+					try { Thread.sleep(10); } catch (InterruptedException e){ }
 				}
 			}
 		};
@@ -88,9 +87,9 @@ public class Game {
 			Vec vel = player.getVelocity();
 			
 			if(player.isMovingLeft()) {
-				vel.x = -Config.PLAYER_X_SPEED;
+				vel.x = -Config.PLAYER_MOVE_SPEED;
 			} else if(player.isMovingRight()) {
-				vel.x = Config.PLAYER_X_SPEED;
+				vel.x = Config.PLAYER_MOVE_SPEED;
 			} else {
 				vel.x = 0f;
 			}
@@ -99,8 +98,7 @@ public class Game {
 				vel.y += GRAVITY*TIME;
 				pos.y += vel.y*TIME;
 				
-				if(pos.y > 100) pos.y = 100f;
-				else if(pos.y < 0) pos.y = 0;
+				pos.y = Math.min(Math.max(pos.y, 0), 100);
 				
 				if(pos.y == 100){ 
 					player.setJumping(false);
@@ -114,71 +112,82 @@ public class Game {
 				pos.x += vel.x*TIME;
 				
 				int side = player.getSide();
-				if(side*pos.x > (100 - PLAYER_WIDTH/2)) pos.x = side*(100 - PLAYER_WIDTH/2);
-				else if(side*pos.x < (PLAYER_WIDTH/2 + NET_WIDTH/2)) pos.x = side*(PLAYER_WIDTH/2 + NET_WIDTH/2);
+				
+				if(side == 1){ // right
+					pos.x = Math.min(Math.max(pos.x, 50 + NET_WIDTH/2 + PLAYER_WIDTH/2), 100 - PLAYER_WIDTH/2);
+				} else { // left
+					pos.x = Math.max(Math.min(pos.x, 50 - NET_WIDTH/2 - PLAYER_WIDTH/2), PLAYER_WIDTH/2);
+						
+				}
+
 				moved = true;
 			}
 			
 			// check contact with ball			
 			if(state == RUNNING) playerTouchingBall(player);
 			
-			
-
 			if(moved){
 				server.sendToAll(Command.playerPosition(player));
 			}
 		}
+		
+
 		
 		if(state == RUNNING){
 			Vec pos = ball.getPosition();
 			
 			// ball touching side
 			if(pos.x >= (100 - BALL_RADIUS) || pos.x <= BALL_RADIUS){
-				ball.setVelocity(ball.getVelocity().negateX());
+				ball.setVelocity(ball.getVelocity().negateX().scale(BALL_SLOWDOWN_FACTOR));
 			}
 			
 			// ball touching ceiling
 			if(pos.y <= BALL_RADIUS){
-				ball.setVelocity(ball.getVelocity().negateY());
+				ball.setVelocity(ball.getVelocity().negateY().scale(BALL_SLOWDOWN_FACTOR));
 			}
 			
+
+			Vec nbp = pos.subtract(new Vec(50f, 100-NET_HEIGHT)).negate();
+			
 			// ball touching net side
-			if((50-pos.x) <= (BALL_RADIUS + NET_WIDTH/2) && pos.y <= (100-NET_HEIGHT)){
-				ball.setVelocity(ball.getVelocity().negateX());
+			if(Math.abs(nbp.x) <= (BALL_RADIUS + NET_WIDTH/2) && nbp.y <= 0){
+				ball.setVelocity(ball.getVelocity().negateX().scale(BALL_SLOWDOWN_FACTOR));
 			}
 			
 			// ball touching net top
-			if(pos.distanceTo(new Vec(0f, 100-NET_HEIGHT)) <= (NET_WIDTH/2 + BALL_RADIUS)){
-				float a = (-ball.getVelocity().getAngle()) + (float)(Math.PI);
-				ball.setVelocity(ball.getVelocity().withAngle(a));				
+			if(nbp.y > 0 && nbp.getLength() <= (NET_WIDTH/2 + BALL_RADIUS)){
+				if(ball.getVelocity().absoluteAngleTo(nbp) < Math.PI/2){
+					float b = (float)Math.PI + nbp.getAngle() - ball.getVelocity().angleTo(nbp);
+					ball.setVelocity(ball.getVelocity().withAngle(b));
+				}
 			}
 			
 			
 			if(pos.y < (100-BALL_RADIUS)){
 				Vec vel = ball.getVelocity();
 				
-				vel.y += GRAVITY*(TIME);
-				pos.x += vel.x*(TIME);
-				pos.y += vel.y*(TIME);
+				vel.y += 0.4f*GRAVITY*TIME;
+				pos.x += vel.x*TIME;
+				pos.y += vel.y*TIME;
 				
 				if(pos.y > (100 - BALL_RADIUS)) pos.y = 100 - BALL_RADIUS;
 				server.sendToAll(Command.ballPosition(ball));
 			} else {
-				Logger.debug("SCORE!!");
-				// score!
-				
+				// score				
 				for(Player player : server.getPlayers()){
 					player.setHasBall(false);
 				}
 				
-				Player player = findPlayerWithSide(pos.x > 0 ? -1 : 1);
-				player.score(set);
-				server.sendScore();
+				Player player = findPlayerWithSide(pos.x > 50 ? -1 : 1);
+				if(player != null){
+					player.score(set);
+					server.sendScore();
 				
-				if(player.getScore()[set] >= SET_SCORE){
-					newSet();
-				} else {
-					player.setHasBall(true);
+					if(player.getScore()[set] >= SET_SCORE){
+						newSet();
+					} else {
+						player.setHasBall(true);
+					}
 				}
 				
 				setupAfterScore();
@@ -242,24 +251,19 @@ public class Game {
 	}
 	
 	private void playerTouchingBall(Player player){
-		Vec playerPos = player.getPosition().add(new Vec(0, PLAYER_HEIGHT));
-		
-		Vec nbp = ball.getPosition().subtract(playerPos);
+		Vec playerPos = player.getPosition().subtract(new Vec(0, PLAYER_HEIGHT));
+		Vec nbp = ball.getPosition().subtract(playerPos).negate();
 		Vec pp = new Vec(0,0);
 		
-		if(nbp.y >= 0){ // contact top
-			if(nbp.distanceTo(pp) <= (PLAYER_WIDTH/2 + BALL_RADIUS)){
-				Vec nbv = ball.getVelocity().subtract(player.getVelocity());
-				float a = (-nbv.getAngle()) + 2*((float)(Math.PI/2) - nbp.getAngle());
-				ball.setVelocity(nbv.withAngle(a).add(player.getVelocity()));				
-			}
-		} else {
-			if(nbp.x >= -(PLAYER_WIDTH/2 + BALL_RADIUS) && nbp.x <= (PLAYER_WIDTH/2 + BALL_RADIUS)){ // -A <= x <= A
-				ball.setVelocity(ball.getVelocity().subtract(player.getVelocity()).negateX().add(player.getVelocity()));
-			}
-		}
-		
-	}
-	
+		if(nbp.y > 0 && nbp.distanceTo(pp) <= (PLAYER_WIDTH/2 + BALL_RADIUS)){
+			Vec nbv = ball.getVelocity().subtract(player.getVelocity());		
 
+			if(nbv.absoluteAngleTo(nbp) < Math.PI/2){
+				float b = (float)Math.PI + nbp.getAngle() - nbv.angleTo(nbp);
+				ball.setVelocity(nbv.withAngle(b).add(player.getVelocity()));
+			}
+		} else if(nbp.y < 0 && nbp.x >= -(PLAYER_WIDTH/2 + BALL_RADIUS) && nbp.x <= (PLAYER_WIDTH/2 + BALL_RADIUS)){ // -A <= x <= A
+			ball.setVelocity(ball.getVelocity().subtract(player.getVelocity()).negateX().add(player.getVelocity()));
+		}	
+	}
 }
