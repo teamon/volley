@@ -11,8 +11,7 @@ import java.io.IOException;
 
 
 /**
- *
- * @author teamon
+ * Main server frame
  */
 public class Frame extends JFrame {
     private JButton startStopButton;
@@ -20,8 +19,14 @@ public class Frame extends JFrame {
     private JTextField portTextField;
     private JTextArea logTextArea;
     
+    /**
+     * Server instance reference
+     */
     private Server server;
 
+    /**
+     * Creates new server frame
+     */
     public Frame() {
         setTitle("Volley Server");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -68,20 +73,25 @@ public class Frame extends JFrame {
         pack();
     }
 
-    
+    /**
+     * Start button action
+     */
     protected void startServer(){
         try {
             int port = Integer.parseInt(portTextField.getText());
-            server = new Server(port);
+            server = new Server(port, this);
             log("Server started");
             startStopButton.setText("Stop");
             portTextField.setEnabled(false);
         } catch (IOException e){
-            Logger.error(e.getMessage());
+            log(e.getMessage());
             showError(e.getMessage());
         }
     }
     
+    /**
+     * Stop button action
+     */
     protected void stopServer(){
         if(server != null){
             server.kill();
@@ -92,10 +102,16 @@ public class Frame extends JFrame {
         }
     }
 
+    /**
+     * Display error dialog
+     */
     protected void showError(String message){
         JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
     
+    /**
+     * Log message in console
+     */
     protected void log(String message){
         logTextArea.append(message + "\n");
     }

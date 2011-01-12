@@ -6,22 +6,27 @@ import java.net.*;
 
 /**
  * Low level class for handling socket connections
- * 
- * @author teamon
  */
-public class ConnectionThread extends Thread {
+public class ConnectionThread extends SmartThread {
+    /**
+     * Connection message listener
+     */
     private MessageListener listener;
     private Socket socket;
     private PrintWriter out = null;
     private BufferedReader in = null;
-    private boolean keep = true;
     
+    /**
+     * Create new ConnectionThread
+     */
     public ConnectionThread(MessageListener listener, Socket socket){
-        super("ConnectionThread");
         this.listener = listener;
         this.socket = socket;
     }
     
+    /**
+     * Connects to socket
+     */
     public void run() {
         try {
             out = new PrintWriter(socket.getOutputStream(), true); // with auto-flush
@@ -29,7 +34,6 @@ public class ConnectionThread extends Thread {
         
             String inputLine;
             while(keep && (inputLine = in.readLine()) != null){
-//            	Logger.debug("ConnectionThread: " + inputLine);
                 listener.processMessage(this, inputLine);
             }
             
@@ -38,6 +42,11 @@ public class ConnectionThread extends Thread {
         }
     }
     
+    /**
+     * Send message through socket
+     * 
+     * @param message
+     */
     public void sendMessage(String message){
         while(out == null){
         	Logger.warn("out == null");
@@ -45,17 +54,26 @@ public class ConnectionThread extends Thread {
         out.println(message);
     }
     
+	/**
+	 * Send Command through socket
+	 * @param command
+	 * @see Command
+	 */
     public void sendMessage(Command command){
     	sendMessage(command.toString());
     }
     
-    public void kill() throws IOException {
-        keep = false;
+    /**
+     * Close connection
+     */
+    @Override
+    public void kill() {
+        super.kill();
         
         out.close();
-        in.close();
-        socket.close();
+        try { in.close(); } catch (IOException e) { /* do nothing */ }
+        try { socket.close(); } catch (IOException e) { /* do nothing */ }
         
-        // this.listener.remove(this);
+        listener.remove(this);
     }
 }

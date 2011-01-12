@@ -1,18 +1,46 @@
 package eu.teamon.volley.common;
 
+/**
+ * Communication commands
+ */
 public class Command {
+    /**
+     * Command id
+     */
 	public int id;
+	
+    /**
+     * Command arguments
+     */
 	public String[] args;
 	
+    /**
+     * Created new Command object with specified id and arguments
+     * 
+     * @param id command id
+     * @param args command arguments
+     */
 	public Command(int id, String... args){
 		this.id = id;
 		this.args = args;
 	}
 	
+    /**
+     * Converts Command to String that can be sent
+     * 
+     * Uses format "[id]#[arg1]#[arg2]#[arg3] ..."
+     * 
+     * @see #parse(String)
+     */
 	public String toString(){
 		return Utils.join(Utils.prepend(this.id, this.args), SEPARATOR);
 	}
 	
+    /**
+     * Parses String into Command object
+     * 
+     * @see #toString()
+     */
 	public static Command parse(String message){
 		try {
 			String[] chunks = message.split(SEPARATOR, 2);
@@ -25,6 +53,9 @@ public class Command {
 		return new Command(INVALID);
 	}
 	
+    /**
+     * String representation arguments separator
+     */
 	public static final String SEPARATOR = "#";
 	
 

@@ -1,5 +1,8 @@
 package eu.teamon.volley.common;
 
+/**
+ * Application configuration
+ */
 public class Config {
     public static final String 	DEFAULT_HOST 	= "localhost";
     public static final int 	DEFAULT_PORT 	= 7777;

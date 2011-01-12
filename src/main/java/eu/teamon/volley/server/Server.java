@@ -15,27 +15,41 @@ import eu.teamon.volley.common.Logger;
 import eu.teamon.volley.common.MessageListener;
 import eu.teamon.volley.common.SmartThread;
 
+/**
+ * Game Server application
+ *
+ */
 public class Server extends SmartThread implements MessageListener {
-    public static final int CONNECTIONS_LIMIT = 2; // 2 TEMP!!!
+    public static final int CONNECTIONS_LIMIT = 2;
 
     private ServerSocket socket = null;
+    private Frame frame;
+    
+    /**
+     * Connected clients map (connection -> player)
+     */
     private Map<ConnectionThread, Player> connections;
+    
+    /**
+     * Game reference
+     */
     private Game game;
     
-    public Server() throws IOException {
-        this(Config.DEFAULT_PORT);
-    }
-    
-    public Server(int port) throws IOException {
+    /**
+     * Starts new server at specified port
+     */
+    public Server(int port, Frame frame) throws IOException {
+    	this.frame = frame;
         this.socket = new ServerSocket(port);
         this.connections = new HashMap<ConnectionThread, Player>();     
         this.game = new Game(this);
-        // this.game.start();
         start();
     }
     
+    /**
+     * Process message sent from client
+     */
     public void processMessage(ConnectionThread from, String message){
-//    	Logger.debug("server got: " + message);
     	Command cmd = Command.parse(message);
     	
     	switch(cmd.id){
@@ -96,28 +110,28 @@ public class Server extends SmartThread implements MessageListener {
     			game.stop();
     			Player player = this.connections.get(from);
     			sendToAll(Command.playerDisconnected(player));
-    			try { 
-    				from.kill(); 
-    			} catch (IOException e) { 
-    				Logger.error(e.getMessage()); 
-    			}
+    			from.kill(); 
+    			
     			this.connections.remove(from);
-                Logger.debug("Client disconnected. Clients left: " + this.connections.size());
+                log("Client disconnected. Clients left: " + this.connections.size());
     		}
     		break;
     		
     		default:
-    			Logger.error("Unknown command: " + message);
+    			log("Unknown command: " + message);
     		break;
     			
     	}
     }
     
+    /**
+     * Runs server managing connected client
+     */
     public void run(){
         try {
             socket.setSoTimeout(1000);
         } catch (SocketException e){
-            Logger.error(e.getMessage());
+            log(e.getMessage());
         }
         
         while(keep){
@@ -136,9 +150,9 @@ public class Server extends SmartThread implements MessageListener {
 		
             } catch (SocketTimeoutException e){
                 // do nothing
-                Logger.debug("Socket Timeout");
+                log("Socket Timeout");
             } catch (IOException e){
-                Logger.error(e.getMessage());
+                log(e.getMessage());
             }
         }
         
@@ -150,14 +164,21 @@ public class Server extends SmartThread implements MessageListener {
             
             socket.close();
         } catch (IOException e){
-            Logger.error(e.getMessage());
+            log(e.getMessage());
         }
     }
     
+    /**
+     * Stop game and remove disconnected client and its player
+     */
     public void remove(ConnectionThread connection){
+    	game.stop();
         this.connections.remove(connection);
     }
     
+    /**
+     * Send Command to all clients
+     */
     public void sendToAll(Command command){
     	String message = command.toString();
     	for (ConnectionThread ct : connections.keySet()) {
@@ -165,16 +186,25 @@ public class Server extends SmartThread implements MessageListener {
         }
     }
     
+    /**
+     * Send current set score to all clients
+     */
 	public void sendScore(){
 		for(Player player : getPlayers()){
 			sendToAll(Command.score(player, player.getScore()[game.getSet()]));
 		}
 	}
     
+	/**
+	 * Returns players collection
+	 */
     public Collection<Player> getPlayers(){
     	return connections.values();
     }
     
+    /**
+     * Tries to start the game first checking if all players are ready
+     */
     protected void tryStartGame(){
     	if(ready()){
     		game.start();
@@ -182,10 +212,16 @@ public class Server extends SmartThread implements MessageListener {
     	}
     }
     
+    /**
+     * Returns true if there is correct number of players and all players are ready
+     */
     protected boolean ready(){
     	return (this.connections.size() == CONNECTIONS_LIMIT && allPlayersReady());
     }
     
+    /**
+     * Returns true if all players are ready
+     */
     protected boolean allPlayersReady(){
     	for(Player player : connections.values()){
     		if(!player.isReady()) return false;
@@ -193,6 +229,16 @@ public class Server extends SmartThread implements MessageListener {
     	return true;
     }
     
+    /**
+     * Logs message to frame
+     */
+    public void log(String message){
+    	frame.log(message);
+    }
+    
+    /**
+     * main - start server application
+     */
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {

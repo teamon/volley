@@ -10,25 +10,60 @@ import eu.teamon.volley.common.Logger;
 import eu.teamon.volley.common.MessageListener;
 import eu.teamon.volley.common.Vec;
 
-
+/**
+ * Game client application
+ *
+ */
 public class Client implements MessageListener {
+	/**
+	 * Main frame
+	 */
 	private Frame frame;
+	
+	/**
+	 * Client game instance
+	 */
 	private Game game;
+	
+	/**
+	 * Player 
+	 */
 	private Player player;
+	
+	/**
+	 * Connection with server
+	 */
 	private ConnectionThread connection;
 	
+	/**
+	 * Sets frame reference
+	 */
 	public void setFrame(Frame frame){
 		this.frame = frame;
 	}
 	
+	/**
+	 * Sets game reference
+	 */
 	public void setGame(Game game){
 		this.game = game;
 	}
 	
+	/**
+	 * Returns player
+	 */
     public Player getPlayer(){
         return this.player;
     }
 	
+    /**
+     * Connect to game server
+     * 
+     * @param host Server host
+     * @param port Server port
+     * @param player Player
+     * @throws IOException
+     */
     public void connect(String host, int port, Player player) throws IOException {
         this.player = player;
         this.connection = new ConnectionThread(this, new Socket(host, port));
@@ -36,36 +71,49 @@ public class Client implements MessageListener {
 		sendMessage(Command.newPlayerRegistered(player));
     }
     
+    /**
+     * Disconnect from server
+     */
     public void disconnect(){
-        try {                
-            if(isConnected()) {
-            	sendMessage(Command.disconnect());
-            	this.connection.kill();
-            }
-        } catch (IOException e){
-            Logger.warn("Temporary silent fail");
-        } finally {
+        if(isConnected()) {
+           	sendMessage(Command.disconnect());
+           	this.connection.kill();
         	this.connection = null;
         }
     }
     
+    /**
+     * Checks if there is active connection with server
+     */
     public boolean isConnected(){
     	return this.connection != null;
     }
     
+    /**
+     * Sends ready message to server
+     */
     public void ready(){
     	sendMessage(Command.playerReady());
     }
     
+    /**
+     * Notify frame that player is not ready
+     */
     public void notReady(){
     	frame.notReady();      
     }
     
-    
+    /**
+     * Send command to server
+     * @param command Command to be sent
+     */
     public void sendMessage(Command command){
     	this.connection.sendMessage(command.toString());
     }
     
+    /**
+     * Process message sent from server
+     */
     public void processMessage(ConnectionThread from, String message){
     	Command cmd = Command.parse(message);
     	    	
@@ -164,12 +212,15 @@ public class Client implements MessageListener {
     	}
     }
     
+    /**
+     * Remove connection - disconnect
+     */
     public void remove(ConnectionThread connection){
-        Logger.error("Implement me!");
+    	disconnect();
     }
 
 	/**
-	 * @param args
+	 * main - run client application
 	 */
 	public static void main(String[] args) {
 		java.awt.EventQueue.invokeLater(new Runnable() {

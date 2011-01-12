@@ -9,27 +9,66 @@ import eu.teamon.volley.common.Vec;
 
 import static eu.teamon.volley.common.Config.*;
 
+/**
+ * Server game processing class
+ * 
+ * It does all computations
+ */
 public class Game {
+	// game states
     private static final int WAITING 	= 1;
     private static final int RUNNING	= 2;
     
+    /**
+     * Server reference
+     */
 	private Server server;
+	
+	/**
+	 * Computations thread
+	 */
 	private SmartThread gameThread;
+	
+	/**
+	 * Ball representation
+	 */
 	private Ball ball;
+	
+	/**
+	 * Current game state
+	 */
 	private int state;
+	
+	/**
+	 * Current set number
+	 */
 	private int set = -1;
 	
+	/**
+	 * Creates new game with server referenct
+	 */
 	public Game(Server server){
 		this.server = server;
 		this.ball = new Ball();
 	}
 	
+	/**
+	 * Returns current set number
+	 */
 	public int getSet(){
 		return this.set;
 	}
 	
+	/**
+	 * Returns true if game is in WAITING state
+	 */
 	public boolean isWaiting(){ return state == WAITING; }
 	
+	/**
+	 * Start game
+	 * 
+	 * Setup player and ball positions, notify clients
+	 */
 	public void start(){
 		if(gameThread != null){
 			stop();
@@ -51,8 +90,6 @@ public class Game {
 				for(Player player : server.getPlayers()){
 					server.sendToAll(Command.playerPosition(player));
 				}
-
-		//		server.sendToAll(Command.ballPosition(ball));
 				
 				while(keep) {
 					process();
@@ -62,9 +99,12 @@ public class Game {
 		};
 		
 		gameThread.start();
-		Logger.debug("Server Game Thread started");
+		server.log("Server Game Thread started");
 	}
 	
+	/**
+	 * Stop game
+	 */
 	public void stop(){
 		if(gameThread != null){
 			gameThread.kill();
@@ -77,6 +117,11 @@ public class Game {
 		}
 	}
 	
+	/**
+	 * Game step - "the game's heart"
+	 * 
+	 * It does all the game computations
+	 */
 	public void process(){
 		server.sendToAll(Command.ballPosition(ball));
 
@@ -195,6 +240,9 @@ public class Game {
 		}
 	}
 	
+	/**
+	 * Find player that current hold ball
+	 */
 	private Player findPlayerWithBall(){
 		for(Player player : server.getPlayers()){
 			if(player.hasBall()) return player;
@@ -202,6 +250,9 @@ public class Game {
 		return null;
 	}
 	
+	/**
+	 * Find player with specified side parameter
+	 */
 	private Player findPlayerWithSide(int side){
 		for(Player player : server.getPlayers()){
 			if(player.getSide() == side) return player;
@@ -209,24 +260,32 @@ public class Game {
 		return null;
 	}
 	
+	/**
+	 * Make "serve" action
+	 * 
+	 * Checks if specified player holds the ball
+	 */
 	public void serve(Player player){
 		if(player == findPlayerWithBall()){
 			state = RUNNING;
 		}
 	}
 	
+	/**
+	 * Start new game set or stop game if enough sets were played 
+	 */
 	private void newSet(){
 		if(this.set < Config.SET_NUM-1){
 			this.set++;
 			
-			Logger.debug("New set: " + this.set);
+			server.log("New set: " + this.set);
 			
 			for(Player player : server.getPlayers()){
 				player.setHasBall((player.getSide() == -1 && this.set % 2 == 0)	|| (player.getSide() == 1 && this.set % 2 == 1));
 			}
 			
 			Player p = this.findPlayerWithBall();
-			Logger.debug("Player with ball: " + p.getNick());
+			server.log("Player with ball: " + p.getNick());
 			
 			server.sendToAll(Command.newSet(this.set));
 			server.sendScore();
@@ -235,6 +294,9 @@ public class Game {
 		}
 	}
 	
+	/**
+	 * Setup players and ball position in start position after score
+	 */
 	private void setupAfterScore(){
 		for(Player player : server.getPlayers()){
 			player.setStartPosition();
@@ -250,6 +312,9 @@ public class Game {
 		state = WAITING;
 	}
 	
+	/**
+	 * Checks if player is touching a ball, if yes computes bounce
+	 */
 	private void playerTouchingBall(Player player){
 		Vec playerPos = player.getPosition().subtract(new Vec(0, PLAYER_HEIGHT));
 		Vec nbp = ball.getPosition().subtract(playerPos).negate();

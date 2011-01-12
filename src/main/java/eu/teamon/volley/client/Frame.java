@@ -14,8 +14,7 @@ import eu.teamon.volley.common.Utils;
 
 
 /**
- *
- * @author teamon
+ * Client main frame
  */
 public class Frame extends JFrame {
 	private class EmptyNickException extends Exception {}
@@ -41,6 +40,9 @@ public class Frame extends JFrame {
     private Client client;
     private Game game;
     
+    /**
+     * Create frame
+     */
     public Frame(Client client) {
     	this.client = client;
     	
@@ -205,20 +207,33 @@ public class Frame extends JFrame {
 		setVisible(true);
     }
     
+    /**
+     * Display chat message
+     * @param player Message author
+     * @param message Message content
+     */
     public void addChatMessage(Player player, String message){
     	chatTextArea.append(String.format("<%s> %s\n", player.getNick(), message));
     }
     
+    /**
+     * Notify client that player is ready
+     */
     protected void ready(){
     	client.ready();
     	readyButton.setEnabled(false);
     }
     
+    /**
+     * Enable ready button
+     */
     protected void notReady(){
     	readyButton.setEnabled(true);
     }
     
-    
+    /**
+     * Display players score
+     */
     public void displayScore(){
     	int set = game.getSet();
     	
@@ -230,7 +245,9 @@ public class Frame extends JFrame {
 		}
     }
        
-
+    /**
+     * Connect button action
+     */
     protected void connect(){
         Logger.debug("Connecting...");
         try {
@@ -262,6 +279,9 @@ public class Frame extends JFrame {
         }
     }
     
+    /**
+     * Disconnect button action
+     */
     protected void disconnect(){
         client.disconnect();
         game.stop();
@@ -279,16 +299,26 @@ public class Frame extends JFrame {
         readyButton.setEnabled(false);
     }
     
-    public void disableChat(){
+    /**
+     * Disable chat panel
+     */
+    protected void disableChat(){
     	chatTextArea.setEnabled(false);
         chatMessageInput.setEnabled(false);
     }
     
-    public void enableChat(){
+    /**
+     * Enable chat panel
+     */
+    protected void enableChat(){
     	chatTextArea.setEnabled(true);
         chatMessageInput.setEnabled(true);
     }
 
+    /**
+     * Show error dialog
+     * @param message
+     */
     protected void showError(String message){
         JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
